@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"/>
+<title>Emochi Benchmark + 数据画像 交接文档 · 给 duidui</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:'Inter','Noto Sans SC',-apple-system,'PingFang SC',sans-serif;background:#faf9f7;color:#1f1d1a;font-size:14px;line-height:1.7;padding:48px 24px}
+.page{max-width:880px;margin:0 auto}
+h1{font-size:28px;font-weight:700;letter-spacing:-.01em;border-bottom:1px solid #e8e4dd;padding-bottom:16px;margin-top:32px}
+h2{font-size:20px;font-weight:700;margin-top:36px;color:#c96442;border-bottom:1px solid #e8e4dd;padding-bottom:8px}
+h3{font-size:15px;font-weight:600;margin-top:20px;color:#6b6862}
+p{margin:8px 0}
+ul,ol{padding-left:24px;margin:8px 0}
+li{margin:4px 0}
+code{font-family:'JetBrains Mono',Menlo,monospace;font-size:12.5px;background:#f5f3ef;padding:2px 5px;border-radius:3px}
+pre{background:#1f1d1a;color:#f5f3ef;padding:16px 20px;border-radius:8px;overflow-x:auto}
+pre code{background:transparent;color:#f5f3ef;padding:0}
+strong{font-weight:700;color:#1f1d1a}
+a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
+a:hover{border-bottom-style:solid}
+.dl{background:#f6ece6;border-left:3px solid #c96442;padding:14px 20px;margin:24px 0;border-radius:0 8px 8px 0;font-size:13.5px}
+</style></head><body>
+<div class="page">
+<div class="dl"><strong>📦 下载完整交接包（zip）</strong>：<a href="benchmark_handover.zip">benchmark_handover.zip</a> · 包含全部源代码 + 数据 csv + 历史 report + brief 文档</div>
+<h1>Emochi Benchmark + 数据画像 工作交接</h1>
+
+<strong>交接对象</strong>：@duidui
+<strong>整理人</strong>：助手（christina）
+<strong>整理日期</strong>：2026-05-18
+<strong>周期范围</strong>：2026-04-15 至 2026-05-18（约 5 周）
+
+<p>---</p>
+
+<h2>TL;DR</h2>
+
+<p>这份交接包含两条并行工作线：</p>
+
+<ol>
+<li><strong>离线 image benchmark 方法学 + 工具链</strong>（<code>kaon-benchmark</code>）—— 4 维度 VLM judge 评分系统，已跑通 v2/v3/v4/v5 多版本迭代，落地到 emochi-bench 1000 条测试集 + 100 条人工校准集的方案设计</li>
+<li><strong>emochi 用户 / bot 数据画像分析</strong>（多份 zip 交付）—— bot 内容生态、用户性别 / 地域 / 付费、真人 vs 动漫 image style split、6 个视觉风格 sub-spec 训练 brief</li>
+</ol>
+
+<p>最近一周（5/17-5/18）大头工作：<br/><ul><br/><li>35K bot image style 分类（PG 14 天采样 → anime/realistic dominant）</li><br/><li>真人 / 动漫用户画像 split + 付费率 + 留存数据</li><br/><li>真人 / 动漫各分 3 类视觉风格 sub-spec brief</li><br/><li>1200 张视觉参考图 gallery（让产品挑选）</li><br/></ul></p>
+
+<p>---</p>
+
+<h2>目录结构</h2>
+
+<pre><code>benchmark_handover/
+├── HANDOVER.md                           # 你正在读的文档
+├── 01_kaon_benchmark_code/               # 离线 benchmark 完整代码库
+│   ├── README.md                         # 启动方式
+│   ├── pyproject.toml                    # 依赖
+│   ├── config.yaml                       # 主配置（4 维度权重 / VLM endpoint）
+│   ├── config_calibration100.yaml        # 100 条校准集配置
+│   ├── tag_registry.yaml                 # tag 标签字典
+│   ├── prompts/                          # 6 个 VLM judge prompt YAML
+│   ├── data/                             # 测试集 + 校准集 CSV
+│   ├── src/kaon_benchmark/                # Python pkg 源码
+│   ├── results/                          # 最近一次 full + smoke 报告
+│   └── tests/
+├── 02_kaon_bench_v4_prompts/             # v4 polished prompt（D1/D2/D3/D4 + global config）
+├── 03_benchmark_reports/                 # 历次 benchmark report HTML + raw csv
+├── 04_data_pipeline_deliveries/          # emochi 数据画像各期 zip 交付
+├── 05_recent_anime_real_split/           # 5/17 真人/动漫 split 分析
+│   ├── scripts/                          # 数据管线 Python script
+│   └── results/                          # 关键交付 CSV
+└── 06_visual_style_spec/                 # 6 个 sub-spec 训练 brief + scraper
+</code></pre>
+
+<p>---</p>
+
+<h2>项目目标 & 硬约束</h2>
+
+<h3>Benchmark 目标</h3>
+为 emochi（roleplay 对话产品）的<strong>剧情分镜生图</strong>能力建 benchmark。<strong>不是通用 T2I 质量评估</strong> —— 面向"叙事上下文中生成角色一致的剧情插画"。
+
+<strong>业务锚点</strong>：轻小说 / 漫画 / 恋与深空的插画级体验。
+
+<h3>4 维度权重（Rian 拍板，不要改）</h3>
+
+<ul>
+<li><strong>D1 角色一致性</strong>：0.30</li>
+<li><strong>D2 剧情匹配</strong>：0.30</li>
+<li><strong>D3 视觉吸引力</strong>：0.25</li>
+<li><strong>D4 画面质量</strong>：0.15</li>
+</ul>
+
+<h3>Hard penalty</h3>
+<ul>
+<li>D4 ≤ 3：composite 封顶 5</li>
+<li>D1 ≤ 3：composite 封顶 4</li>
+<li>阈值待 100 条人工校准后再定（calibration 还没跑完）</li>
+</ul>
+
+<h3>CoT 配置（DreamBench++ Table 6 实证）</h3>
+<ul>
+<li>D1 / D3 / D4：CoT OFF</li>
+<li>D2：CoT ON</li>
+</ul>
+
+<h3>量表</h3>
+0-4（v1.3 已统一，之前有过 0-5 / 0-100 摇摆）
+
+<h3>每条 case 输入</h3>
+<ul>
+<li>ref（角色参考图）+ prompt（生图 prompt）+ 前 5 轮对话（叙事上下文）</li>
+</ul>
+
+<p>---</p>
+
+<h2>数据源（emochi 数据画像 pipeline 用）</h2>
+
+<h3>StarRocks 数仓（主要分析层）</h3>
+<ul>
+<li><code>pub-sr-fe01-shared.flow.chat:9030</code></li>
+<li>user / password: <code>query_web</code> / <code>Query@SR.flowgpt!</code></li>
+<li>T+1.5 延迟</li>
+<li>关键表：</li>
+</ul>
+  - <code>ads.ads_operation_bot_metrics_di</code> — bot 维度 chats / shows / users + v8_primary_tag
+  - <code>ads.ads_operation_app_bot_personas_info_di</code> — bot × gender × age × country × chats
+  - <code>dws.dws_app_user_bot_daily_di</code> — user × bot × chat_send_count
+  - <code>dws.dws_app_user_revenue_di</code> — subscribe_orders / flux_orders
+  - <code>dws.dws_app_user_daily_profile_metrics_di</code> — retention_1/7/14/30
+
+<h3>PG 主库（生图历史源）</h3>
+<ul>
+<li><code>prod-1-instance-readonly.cmg2ypxvbvye.us-east-2.rds.amazonaws.com</code></li>
+<li>关键表：<code>prod.PromptImageHistory</code></li>
+</ul>
+  - <code>metadata.classifierLabel</code> — anime / realistic image classifier label
+  - <code>metadata.moderationLabel</code> — 内容审核结果
+<ul>
+<li><strong>注意 PG read-replica recovery conflict</strong> —— 查全量会被 kill；用 6h 窗口 LIMIT 10000 分批采样</li>
+</ul>
+
+<h3>LLM 路由（benchmark 调 judge 用）</h3>
+<ul>
+<li><code>ANTHROPIC_API_KEY</code> + api.anthropic.com（默认，最稳定）</li>
+<li><code>OPENROUTER_API_KEY</code> + openrouter.ai（Anthropic 429 fallback）</li>
+<li>现在 kaon router 已部分废弃，不要写新代码用它</li>
+</ul>
+
+<p>---</p>
+
+<h2>01 · kaon-benchmark 完整 benchmark 代码库</h2>
+
+<strong>起点</strong>：完整 Python pkg，4 维度 VLM judge 评分系统。
+
+<strong>当前状态</strong>：v2 → v3 → v4 → v5（gemini）迭代过，最近一次 full run 报告在 <code>results/report.html</code>，跑了 50+ test cases。
+
+<strong>关键文件</strong>：
+<ul>
+<li><code>config.yaml</code> —— 主入口（VLM endpoint / 权重 / 模型选择 / penalty 阈值）</li>
+<li><code>prompts/dim*.yaml</code> —— 6 个 judge prompt（D1/D2_step1/D2_step2/D3/D4 + 一个 D2 prompt-only fallback）</li>
+<li><code>data/calibration_100_emochi.csv</code> —— <strong>100 条人工校准集</strong> ⚠️ 这是核心 anchor</li>
+<li><code>data/test_cases.csv</code> —— 测试集</li>
+<li><code>src/kaon_benchmark/</code>：</li>
+</ul>
+  - <code>cli.py</code> —— kaon-bench dry-run / probe / run 命令
+  - <code>generator.py</code> —— 调被测模型生成图
+  - <code>evaluator.py</code> —— 调 VLM judge 评分
+  - <code>scorer.py</code> —— 4 维度加权 + hard penalty 计算
+  - <code>reporter.py</code> —— 生成完整 HTML report
+  - <code>smoke_reporter.py</code> —— smoke run HTML
+  - <code>progress.py</code> —— resume-from-progress.jsonl
+  - <code>anthropic_client.py</code> —— Anthropic API client（v3+ 加入）
+
+<strong>怎么跑</strong>：
+<pre><code>cd 01_kaon_benchmark_code
+pip install -e .
+export KAON_API_KEY=...
+export BASELINE_API_KEY=...
+export VLM_API_KEY=...
+kaon-bench dry-run --config config.yaml      # 配置 sanity check
+kaon-bench probe --config config.yaml         # 探活 endpoint
+kaon-bench run --config config.yaml --limit 5 --smoke    # smoke 5 条
+kaon-bench run --config config.yaml           # full
+</code></pre>
+
+<strong>已知未完成</strong>：
+<ul>
+<li>100 条人工校准跑完 → 调 hard penalty 阈值（D1/D4 = 3 是预估，没 verify）</li>
+<li>VLM judge 替换：现在用 Claude Opus 当 judge，calibration 之后可能要换 Gemini 2.5 Pro（Rian 提过）</li>
+<li>D2 step1/step2 两段式调用偶尔会卡，需要 retry 机制（v4 加了部分，不完整）</li>
+</ul>
+
+<p>---</p>
+
+<h2>02 · kaon_bench_v4 prompt 文档</h2>
+
+<p><code>02_kaon_bench_v4_prompts/VLM_prompt/</code>：</p>
+
+<ul>
+<li><code>00_global_config_polished.md</code> —— 全局 instruction（量表 / output format / safety / few-shot）</li>
+<li><code>D1/D1_character_consistency_polished.md</code> —— 角色一致性 prompt（ref vs 生成图）</li>
+<li><code>D2/D2_story_match_polished.md</code> —— 剧情匹配 prompt（prompt + 前 5 轮对话 vs 生成图）</li>
+<li><code>D3/D3_visual_appeal_polished.md</code> —— 视觉吸引力 prompt</li>
+<li><code>D4/D4_technical_quality_polished.md</code> —— 画面质量 prompt</li>
+</ul>
+
+<strong>这些 .md 是 v4 的 polished 版本</strong>，已经合到 <code>01_kaon_benchmark_code/prompts/dim*.yaml</code>。.md 留着是因为可读性更好，便于人工迭代。
+
+<p>---</p>
+
+<h2>03 · 历史 benchmark 报告</h2>
+
+<p><code>03_benchmark_reports/</code>：</p>
+
+<ul>
+<li><code>kaon_bench_v2_smoke样本.html</code> / <code>kaon_bench_v2_报告样本.html</code> —— v2 初版</li>
+<li><code>kaon_bench_v3_报告_d2修复.html</code> / <code>kaon_bench_v3_raw_scores.csv</code> —— v3 D2 prompt 修复后</li>
+<li><code>kaon_bench_v4_opus_5条.html</code> / <code>kaon_bench_v4_opus_5条_raw.csv</code> —— v4 用 Opus 当 judge</li>
+<li><code>kaon_bench_v5_gemini_5条.html</code> / <code>kaon_bench_v5_gemini_5条_raw.csv</code> —— v5 切 Gemini 2.5 Pro judge</li>
+<li><code>kaon_bench_calib_smoke_报告.html</code> / <code>kaon_bench_calib_smoke_细节.html</code> / <code>kaon_bench_calib_smoke_raw_scores.csv</code> —— 100 条 calibration set smoke</li>
+<li><code>kaon_benchmark_v2_delivery.zip</code> / <code>kaon_benchmark_v3_delivery.zip</code> —— 各版本完整代码 zip 交付</li>
+</ul>
+
+<strong>对比看版本演进</strong>用。reproducibility 不一定可保证（数据 / API 都会变），主要看方法学迭代。
+
+<p>---</p>
+
+<h2>04 · emochi 数据画像 zip 交付（历史）</h2>
+
+<p><code>04_data_pipeline_deliveries/</code>：</p>
+
+<ul>
+<li><code>emochi_bot_distribution_2026-04-29_to_05-05.zip</code> —— bot 语言 / nsfw / tag 分布 + top200 bot</li>
+<li><code>emochi_user_persona_2026-05-05_to_05-11.zip</code> —— 用户 gender / age / country × tag 分布</li>
+<li><code>emochi_persona_split_2026-05-10_to_05-16.zip</code> —— anime / realistic split 用户画像粗分</li>
+<li><code>emochi_image_style_persona_2026-05-10_to_05-16.zip</code> —— bot_style.tsv（35K bot classifier mapping）+ persona_by_image_style</li>
+<li><code>emochi_image_style_full_2026-05-10_to_05-16.zip</code> —— style_tag × 性别 × top5 国家完整交叉 + top100 bot 明细</li>
+</ul>
+
+<strong>还有些 standalone csv / html</strong>：
+<ul>
+<li><code>emochi_chat_gen_prompt_30d.csv/html</code> —— 30 天 chat 生图 prompt 样本</li>
+<li><code>emochi_chat_genimage_pg.csv/html</code> —— PG 主库直接拉的真人风 50 条样本</li>
+<li><code>emochi_chat_gen_real_human*.csv/html</code> —— 真人风 chat 生图 prompt 大全</li>
+<li><code>emochi_real_human_sysprompt_avatar_result*.csv/html</code> —— 真人 bot sysprompt + avatar + result 三元组</li>
+<li><code>emochi_top100_3d_real_user.csv</code> —— 3 天真人 top100 用户</li>
+<li><code>emochi_real_user_3d.html</code> / <code>emochi_real_user_dashboard_2026-05-06.html</code> —— 真人用户 dashboard</li>
+<li><code>emochi_ip_bot_heat_2026-05-05_to_05-11.csv</code> —— IP bot 热度榜</li>
+</ul>
+
+<p>---</p>
+
+<h2>05 · 最近一周 真人/动漫 split 分析</h2>
+
+<p><code>05_recent_anime_real_split/</code>：</p>
+
+<h3>scripts/</h3>
+<ul>
+<li><code>pay_analysis.py</code> —— 真人/动漫 用户主风格 × 付费渗透率分析</li>
+<li><code>style_tag_analysis.py</code> —— image_style × v8_primary_tag 聚合</li>
+<li><code>run.py</code> —— full pipeline 主入口（style × tag breakdown + top100 bot 明细）</li>
+<li><code>consumption_profile.py</code> —— 用户消费深度画像（chats per user / 付费类型 / 留存 / 重度用户 lift）</li>
+</ul>
+
+<h3>results/</h3>
+<ul>
+<li><code>style_tag_breakdown.csv</code> —— 真人/动漫 × primary_tag × 性别 × top5 country 完整交叉</li>
+<li><code>top100_anime_bots.csv</code> —— top100 动漫 bot 明细</li>
+<li><code>top100_realistic_bots.csv</code> —— top100 真人 bot 明细</li>
+<li><code>style_payment.csv</code> —— 5 个 user bucket × 付费率</li>
+<li><code>persona_by_image_style.csv</code> —— bot 风格基础统计</li>
+</ul>
+
+<h3>源数据（太大没放 handover，需要重跑 query 拉）</h3>
+跑这些 script 需要从 StarRocks 拉的源 TSV 在我本机 <code>/tmp/persona_split/</code>：
+<ul>
+<li><code>bot_style.tsv</code> (3.3 MB, 35K bot)</li>
+<li><code>bot_tags_all_7d.tsv</code> (771 MB, 14M rows)</li>
+<li><code>all_persona_7d.tsv</code> (427 MB, 9M rows)</li>
+<li><code>user_bot_chats_7d.tsv</code> (1.3 GB, 28M rows)</li>
+<li><code>paying_users_7d.tsv</code> / <code>paying_detail_7d.tsv</code></li>
+<li><code>user_retention_7d.tsv</code> (104 MB, 3.26M rows)</li>
+</ul>
+
+<strong>你需要的 query 在 script 里能反推</strong>，或者我可以专门整理一份 SQL Brief 给你。
+
+<h3>关键 insight（已发现的）</h3>
+<ul>
+<li>动漫风：5.01 亿 chats / 158.3 万用户 / 女 51.2% 男 37.5% / 付费率 0.72%</li>
+<li>真人风：2.33 亿 chats / 69.5 万用户 / 女 65.3% 男 24.7% / 付费率 0.41%</li>
+<li>动漫付费率 1.76× 真人</li>
+<li>top100 真人 bot 里 BTS / Jungkook / Taehyung 占 9 个，动漫 top100 完全没有 K-pop</li>
+<li>Mafia / Werewolf / CEO 暗黑 trope：真人 15 个 / 动漫 11 个</li>
+</ul>
+
+<p>---</p>
+
+<h2>06 · 视觉风格 sub-spec 训练 brief</h2>
+
+<p><code>06_visual_style_spec/</code>：</p>
+
+<ul>
+<li><code>brief.html</code> —— <strong>6 个 sub-spec 完整训练方案</strong>（live URL: https://christina-kaon.github.io/visual-refs-rian/brief.html）</li>
+<li><code>build_brief.py</code> —— 生成 brief 的源代码</li>
+<li><code>build_gallery.py</code> —— 1200 张视觉参考 gallery 的生成代码（Bing image search scrape）</li>
+<li><code>scrape_all.py</code> —— Bing async endpoint scraper</li>
+<li><code>scraped_image_urls.json</code> —— 1200 张图 metadata（URL + 来源页 + 标题 + query）</li>
+</ul>
+
+<h3>6 个 sub-spec（P0 / P1 优先级）</h3>
+
+<strong>真人 model</strong>（3 个）：
+<ul>
+<li><strong>真人 A · 日韩氧气感 selca</strong>（P0）—— K-pop / NewJeans / IU 自然光谱系</li>
+<li><strong>真人 B · cinematic 危险风</strong>（P0）—— 黑帮 / mafia / dark romance，跨欧美 + 韩港</li>
+<li><strong>真人 C · 抖红 / 小红书美颜风</strong>（P1）—— 大眼磨皮 V-line / cottage-core / 国内扩量时需要</li>
+</ul>
+
+<strong>动漫 model</strong>（3 个）：
+<ul>
+<li><strong>动漫主轨 · 日乙国乙暗黑系美男</strong>（P0）—— JJK / 鬼灭 / 文豪 / dark otome</li>
+<li><strong>动漫副轨 · KyoAni 系软光赛璐璐</strong>（P0）—— K-On / Bocchi / 米哈游立绘</li>
+<li><strong>动漫第三类 · 国风网红动漫风</strong>（P1）—— 光与夜之恋 / 抖音二次元同人 LoRA</li>
+</ul>
+
+<h3>1200 张视觉参考 gallery</h3>
+Live URL: https://christina-kaon.github.io/visual-refs-rian/
+<ul>
+<li>4 轨道 × 10 query × 30 张 = 1200</li>
+<li>浏览器内 checkbox + LocalStorage + 导出选中</li>
+<li>Rian 在挑（5/17 发的，还没收到回执）</li>
+</ul>
+
+<p>---</p>
+
+<h2>已知未完成 / 接棒后建议下一步</h2>
+
+<h3>Benchmark 工作</h3>
+<ol>
+<li><strong>100 条人工校准集还没跑完</strong> —— <code>data/calibration_100_emochi.csv</code> 是核心 anchor，跑完之后才能定 hard penalty 阈值。需要协调李承燕做人工标注。</li>
+<li><strong>judge 模型选型未决</strong> —— v4 用 Opus，v5 实验了 Gemini 2.5 Pro，目前没结论用哪个做 production</li>
+<li><strong>D2 两段式 prompt 偶发卡死</strong> —— v4 加了部分 retry，需要完善</li>
+<li><strong>emochi-bench 历史 Pearson</strong>：D1 0.85 / D3 0.18 / D4 0.07（D2 还没正式校准过）</li>
+</ol>
+
+<h3>数据画像</h3>
+<ol>
+<li><strong>动漫第三类（国风网红动漫风）的视觉参考图没爬过</strong> —— gallery 现在只有 4 轨道，要补第 5 轨</li>
+<li><strong>prompt keyword × 地域分布 verify P1 优先级</strong> —— Rian 还没确认要不要跑，建议做完再定 P1 是否提前</li>
+<li><strong>6 个 sub-spec 的 cross-medium grammar 共享</strong> —— brief 里写了理论，可以做 visual eval rubric 标准化（哪些 dimension 跨真人/动漫共享）</li>
+</ol>
+
+<h3>视觉风格 brief</h3>
+<ul>
+<li>Rian 还没 review 反馈（5/18 12:13 发的，4 小时前）</li>
+<li>等她 push back 后调整反锚点 / 锚点 / 优先级</li>
+<li>翻英文版 forward 海外训练团队（如果要）</li>
+</ul>
+
+<p>---</p>
+
+<h2>联系 / 问题</h2>
+
+<p>我的工作时间表 + 上下文都在 <code>oc_e9fe9476be9f1f885f36153c4de939a5</code> 群（emochi 主群）。如果你接手后有问题，直接在群里 @ 我或者 @Rian。</p>
+
+<p>特别复杂的数据 query / 历史决策背景，建议先翻群聊（关键决策都在群里）。</p>
+
+<p>— 助手 / Christina<br/>2026-05-18</p>
+</div></body></html>
