@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Emochi 视觉风格 Brief · 6 个 sub-spec 训练方案</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:'Inter','Noto Sans SC',-apple-system,'PingFang SC',sans-serif;background:#faf9f7;color:#1f1d1a;font-size:14px;line-height:1.65}
+.page{max-width:920px;margin:0 auto;padding:48px 32px}
+header.top{margin-bottom:48px;border-bottom:1px solid #e8e4dd;padding-bottom:24px}
+header.top .eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#c96442;font-weight:600;margin-bottom:8px}
+header.top h1{margin:0;font-size:32px;font-weight:700;letter-spacing:-.015em;line-height:1.25}
+header.top .sub{margin:8px 0 0;font-size:14px;color:#6b6862}
+.toc{background:#fff;border:1px solid #e8e4dd;border-radius:12px;padding:20px 24px;margin-bottom:48px}
+.toc h3{margin:0 0 12px;font-size:13px;color:#94918a;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+.toc ol{margin:0;padding:0 0 0 20px;font-size:14px}
+.toc li{margin:4px 0}
+.toc a{color:#1f1d1a;text-decoration:none;border-bottom:1px dotted #c8c4bd}
+.toc a:hover{border-bottom-color:#c96442;color:#c96442}
+.callout{background:#f6ece6;border-left:3px solid #c96442;padding:16px 20px;border-radius:0 8px 8px 0;margin-bottom:48px;font-size:13px;line-height:1.7}
+.callout h2{margin:0 0 8px;font-size:14px;color:#c96442;font-weight:600}
+.callout strong{color:#1f1d1a}
+.tldr{margin-bottom:48px}
+.tldr h2{font-size:18px;font-weight:700;margin:0 0 12px}
+.tldr ul{padding-left:24px;margin:0}
+.tldr li{margin:6px 0}
+.spec{background:#fff;border:1px solid #e8e4dd;border-radius:16px;padding:28px 32px;margin-bottom:32px;scroll-margin-top:24px}
+.sh{display:flex;justify-content:space-between;gap:16px;padding-bottom:18px;border-bottom:1px solid #f0ebe2;margin-bottom:20px}
+.sh-l h2{margin:0;font-size:20px;font-weight:700;line-height:1.3}
+.sh-l .tag{margin:6px 0 0;font-size:13px;color:#6b6862;line-height:1.5}
+.sh-r{flex-shrink:0;text-align:right}
+.pri{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;letter-spacing:.04em}
+.pri-p0{background:#f6e8d8;color:#9a6a30}
+.pri-p1{background:#e8eaf2;color:#5a6190}
+.med{display:block;margin-top:6px;font-size:11px;color:#94918a;font-weight:500}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.block{margin-bottom:20px}
+.block h3{margin:0 0 10px;font-size:13px;font-weight:600;color:#94918a;text-transform:uppercase;letter-spacing:.06em}
+.block ul,.block ol{margin:0;padding-left:20px;font-size:13.5px}
+.block li{margin:5px 0;line-height:1.6}
+.block.anti{background:#fdf6f2;border-radius:8px;padding:14px 18px;margin-top:8px}
+.block.anti h3{color:#c96442}
+.block.anti li{color:#6b3a28}
+table.tech{width:100%;border-collapse:collapse;font-size:13px}
+table.tech td{padding:8px 0;border-bottom:1px solid #f0ebe2}
+table.tech td:first-child{font-weight:600;width:100px;color:#6b6862}
+.cross{background:#fff;border:1px solid #e8e4dd;border-radius:16px;padding:24px 28px;margin-bottom:20px}
+.cross h3{margin:0 0 12px;font-size:16px;font-weight:600;color:#c96442}
+.cross p{margin:0;font-size:13.5px;line-height:1.7}
+footer{margin-top:64px;padding-top:24px;border-top:1px solid #e8e4dd;text-align:center;font-size:12px;color:#94918a}
+@media (max-width:700px){.grid2{grid-template-columns:1fr}.page{padding:24px 16px}}
+</style>
+</head><body>
+<div class="page">
+<header class="top">
+  <div class="eyebrow">EMOCHI · VISUAL STYLE TRAINING BRIEF · 2026-05-18</div>
+  <h1>Emochi 真人 / 动漫视觉风格 Brief</h1>
+  <div class="sub">6 个 sub-spec 训练方案 · 基于 emochi bot 内容生态分析 + 用户画像 · 给训练团队 / 美术总监 forward</div>
+</header>
+
+<section class="tldr">
+  <h2>TL;DR</h2>
+  <ul><li>Emochi 是 roleplay 媒介，视觉风格直接服务 "用户和谁谈恋爱" —— 不能用风格 averaging 蒙混过去</li><li>基于 bot 内容生态分析 + 用户画像，识别出 <strong>6 个 sub-spec</strong>：3 真人 × 3 动漫</li><li><strong>必须 6 个独立 model 训练</strong>，不能用一个 base + LoRA 切换 —— 三类用户偏好是分裂的</li><li>P0：4 个 model（海外现状用户）；P1：+2 个 model（东亚 / 国内扩量）</li><li>每个 sub-spec 都需要美术总监级 dataset curation —— 训练集 = 美学固化</li></ul>
+</section>
+
+<div class="toc">
+  <h3>目录</h3>
+  <ol><li><a href="#real_A">真人 A · 日韩氧气感 selca <span style="color:#94918a;font-size:12px">· P0</span></a></li><li><a href="#real_B">真人 B · cinematic 危险风 <span style="color:#94918a;font-size:12px">· P0</span></a></li><li><a href="#real_C">真人 C · 抖红 / 小红书美颜风 <span style="color:#94918a;font-size:12px">· P1（东亚扩量）</span></a></li><li><a href="#anime_main">动漫主轨 · 日乙国乙暗黑系美男 <span style="color:#94918a;font-size:12px">· P0</span></a></li><li><a href="#anime_sub">动漫副轨 · KyoAni 系软光赛璐璐 <span style="color:#94918a;font-size:12px">· P0</span></a></li><li><a href="#anime_third">动漫第三类 · 国风网红动漫风 <span style="color:#94918a;font-size:12px">· P1（国内扩量）</span></a></li></ol>
+</div>
+
+<div class="callout">
+  <h2>这份 brief 不是什么</h2>
+  这份 brief <strong>不是</strong> "我的审美偏好"。它是基于 emochi top100 bot 数据 + 用户性别 / 地域 / 付费分布 + 我对视觉文化谱系的解读综合判断的结果。
+  <br/><br/>
+  反锚点列表如果出现 "训练者的偏好 disguised as 普遍标准" —— 欢迎产品 / 数据端 push back。<strong>实际用户偏好 ≠ 训练者偏好。</strong>
+</div>
+
+
+    <article class="spec" id="real_A">
+      <header class="sh">
+        <div class="sh-l">
+          <h2>真人 A · 日韩氧气感 selca</h2>
+          <p class="tag">K-pop / NewJeans / IU 自然光谱系 · 软光颗粒 · 日常场景 · 无攻击性精致</p>
+        </div>
+        <div class="sh-r">
+          <span class="pri pri-p0">P0</span>
+          <span class="med">真人</span>
+        </div>
+      </header>
+      
+      <div class="grid2">
+        <section class="block">
+          <h3>服务的 bot 类型 / trope</h3>
+          <ul><li>K-pop celebrity bot（如 Jungkook / Taehyung，emochi 真人 top100 有 9 个 BTS-related）</li><li>Boyfriend Material OC（日常陪伴向 OC，不带强 trope）</li><li>OC Real 言情系（青春 / 校园 / 暖男）</li></ul>
+        </section>
+        
+        <section class="block">
+          <h3>审美谱系</h3>
+          <ol><li>2010s Tumblr soft grunge</li><li>韩国 2010s 后半&quot;自然光女团&quot;美学（IU《Palette》/ Red Velvet）</li><li>NewJeans soft retro（Min Hee-jin 2022 Y2K 复兴）</li><li>2024-2026 &quot;非滤镜化精致&quot;</li></ol>
+        </section>
+      </div>
+      
+      <section class="block">
+        <h3>视觉锚点（训练集应包含的参考来源）</h3>
+        <ol class="anchors"><li>NewJeans 各 MV 截图（《Ditto》《Hype Boy》《Cookie》）</li><li>Jungkook 私服街拍 + 机场图</li><li>IU《Palette》《Lilac》专辑封面 + B-side</li><li>Wonyoung / Karina 私服 ig 自拍</li><li>北野武 90s 街头摄影</li><li>蜷川实花早期（80s 末-90s 初，未走入超饱和之前）</li><li>韩国摄影师 Park Ji-hyuk / Mok Jung-wook 青年男性肖像</li><li>NewJeans《Bubble Gum》MV 软光质感</li><li>Olivia Rodrigo《Sour》专辑摄影</li><li>《同感》《情书》《青春变形记》东亚青春电影色调</li></ol>
+      </section>
+      
+      <section class="block">
+        <h3>技术参数</h3>
+        <table class="tech"><tbody>
+        <tr><td>色温</td><td>3500-4500K（暖白偏黄）</td></tr><tr><td>颗粒</td><td>模拟 ISO 800-1600 35mm grain</td></tr><tr><td>对焦</td><td>偶尔 off-focus / motion blur</td></tr><tr><td>背景</td><td>卧室 / 街道 / 咖啡店 / 教室 / 站台 —— 日常场所，不是 studio</td></tr><tr><td>皮肤</td><td>保留毛孔纹理，无 heavy smooth</td></tr><tr><td>脸型</td><td>真人比例，眼睛 20-25%</td></tr>
+        </tbody></table>
+      </section>
+      
+      <section class="block anti">
+        <h3>反锚点（不应混入训练集）</h3>
+        <ul><li>✗ Sephora / Maybelline / L&#x27;Oréal editorial 大片</li><li>✗ Vogue / Harper&#x27;s Bazaar 封面</li><li>✗ 美式 ig model（Kendall Jenner 那种 hot girl 风）</li><li>✗ Sora / Veo 那种&quot;超真实但 AI uncanny&quot;的合成感</li><li>✗ Pinterest tag &quot;aesthetic boy&quot; 的过度滤镜</li><li>✗ 抖红 / 小红书美颜（这是真人 C 的）</li></ul>
+      </section>
+    </article>
+    
+    <article class="spec" id="real_B">
+      <header class="sh">
+        <div class="sh-l">
+          <h2>真人 B · cinematic 危险风</h2>
+          <p class="tag">硬光大反差 · 单点 key · 雨夜霓虹 · 黑帮 / mafia / dark romance · 跨欧美 + 韩港</p>
+        </div>
+        <div class="sh-r">
+          <span class="pri pri-p0">P0</span>
+          <span class="med">真人</span>
+        </div>
+      </header>
+      
+      <div class="grid2">
+        <section class="block">
+          <h3>服务的 bot 类型 / trope</h3>
+          <ul><li>Mafia / CEO / Werewolf OC（emochi 真人 top100 大头）</li><li>Dark romance trope（占有欲 / 危险感 / power exchange）</li><li>NSFW 18.7%（B 轨延伸，cinematic dim lighting 嫁接）</li></ul>
+        </section>
+        
+        <section class="block">
+          <h3>审美谱系</h3>
+          <ol><li>1940s Hollywood Film Noir</li><li>香港吴宇森 80s 暴力美学</li><li>90s GQ 男士时尚硬照</li><li>2000s 韩国黑帮电影（朴赞郁 / 罗泓轸）</li><li>现在的 &quot;K-drama mafia&quot; 美学（《Vincenzo》《杀了我治愈我》）</li></ol>
+        </section>
+      </div>
+      
+      <section class="block">
+        <h3>视觉锚点（训练集应包含的参考来源）</h3>
+        <ol class="anchors"><li>《教父》Vito + Michael 室内单点光戏</li><li>《浴血黑帮》Tommy Shelby 大衣 + 雨夜</li><li>《Succession》Roy 兄弟商务装硬照（GQ x HBO）</li><li>《老男孩》《新世界》《追击者》朴赞郁 / 罗泓轸黑帮片</li><li>《杀了我治愈我》池晟黑化镜头</li><li>GQ Korea / Esquire Korea 2020s 男性封面</li><li>The Weeknd《After Hours》《Dawn FM》专辑视觉</li><li>Peter Lindbergh 90s 男士肖像（黑白高对比）</li><li>Helmut Newton 黑白时尚摄影</li><li>《Gomorrah》《Narcos》街头黑帮纪实感</li></ol>
+      </section>
+      
+      <section class="block">
+        <h3>技术参数</h3>
+        <table class="tech"><tbody>
+        <tr><td>色温</td><td>双轨：3000K 暖钨丝 / 5500K 冷调</td></tr><tr><td>光质</td><td>硬光 + 大反差 / chiaroscuro / 单点 key light</td></tr><tr><td>对焦</td><td>精准锐利 / 浅景深</td></tr><tr><td>背景</td><td>豪车内 / 高级餐厅 / 雨夜街道 / 顶层公寓 / 教堂</td></tr><tr><td>皮肤</td><td>保留质感，可微 film grain</td></tr><tr><td>视觉重点</td><td>implied gaze + implied possessiveness（看镜头 = 命中 dark romance 核心 signal）</td></tr>
+        </tbody></table>
+      </section>
+      
+      <section class="block anti">
+        <h3>反锚点（不应混入训练集）</h3>
+        <ul><li>✗ Cosplay 摆拍感（业余感会破功）</li><li>✗ Hot Topic emo / scene kid 美学</li><li>✗ Twilight 那种 PG-13 vampire 风</li><li>✗ TikTok soft boy in suit 趋势（性张力不够）</li><li>✗ 韩国偶像穿西装的 idol photoshoot（属于真人 A）</li><li>✗ BL 漫画式纤细化（不够&quot;危险&quot;）</li></ul>
+      </section>
+    </article>
+    
+    <article class="spec" id="real_C">
+      <header class="sh">
+        <div class="sh-l">
+          <h2>真人 C · 抖红 / 小红书美颜风</h2>
+          <p class="tag">大眼磨皮 V-line · 居家手机直拍 · cottage-core / Y2K / kawaii · &quot;真人版 anime 萌系&quot;</p>
+        </div>
+        <div class="sh-r">
+          <span class="pri pri-p1">P1（东亚扩量）</span>
+          <span class="med">真人</span>
+        </div>
+      </header>
+      
+      <div class="grid2">
+        <section class="block">
+          <h3>服务的 bot 类型 / trope</h3>
+          <ul><li>国内 / 东亚扩量后的 anime-style real human 偏好用户</li><li>可能也覆盖东南亚 TikTok 美学辐射人群（菲律宾 / 越南 / 泰国 / 印尼）</li></ul>
+        </section>
+        
+        <section class="block">
+          <h3>审美谱系</h3>
+          <ol><li>抖音 / 小红书 selca 文化（2018+）</li><li>中国国风 + Y2K 复兴（2021+）</li><li>韩国 selca 美颜文化的辐射</li><li>&quot;真人 + anime 比例&quot;hybrid 美学</li></ol>
+        </section>
+      </div>
+      
+      <section class="block">
+        <h3>视觉锚点（训练集应包含的参考来源）</h3>
+        <ol class="anchors"><li>小红书&quot;日常 / 居家&quot;标签下高点赞 selca</li><li>抖音&quot;二次元同人&quot;LoRA 美颜风</li><li>韩国 selca 重美颜流派（unlike NewJeans natural light）</li><li>《以闪亮之名》/《时空中的绘旅人》宣传图（虽然是动漫但视觉参考）</li><li>中国 cottage-core 穿搭博主（小红书）</li><li>Y2K 复兴风穿搭（kawaii / 学院 / lolita 元素）</li><li>&quot;我觉得怪但朋友一直发&quot; meme 风格的居家 selca</li><li>日本 enka 风重妆 / 韩国 cute idol concept</li></ol>
+      </section>
+      
+      <section class="block">
+        <h3>技术参数</h3>
+        <table class="tech"><tbody>
+        <tr><td>眼睛</td><td>dramatic enlarge（占脸 35%+，正常 20-25%）+ 双反光</td></tr><tr><td>皮肤</td><td>heavy smooth / 无毛孔 hyperreal</td></tr><tr><td>脸型</td><td>削尖 V-line / 心形脸</td></tr><tr><td>对焦</td><td>自然光手机原相机直拍质感</td></tr><tr><td>分辨率</td><td>偶尔低分辨率 / pixel noise（压缩转发感）</td></tr><tr><td>服装</td><td>cottage-core / Y2K / lolita / kawaii / 校服</td></tr><tr><td>色彩</td><td>高饱和 sweet pop 系</td></tr>
+        </tbody></table>
+      </section>
+      
+      <section class="block anti">
+        <h3>反锚点（不应混入训练集）</h3>
+        <ul><li>✗ 真胶片颗粒 / 写实皮肤纹理（属于真人 A）</li><li>✗ Studio editorial（属于真人 A 的反面，但也不属于这）</li><li>✗ cinematic dim lighting（属于真人 B）</li><li>✗ 欧美 hot girl 风（属于另一支不在 emochi 训练范围）</li></ul>
+      </section>
+    </article>
+    
+    <article class="spec" id="anime_main">
+      <header class="sh">
+        <div class="sh-l">
+          <h2>动漫主轨 · 日乙国乙暗黑系美男</h2>
+          <p class="tag">JJK / 鬼灭 / 文豪 / dark otome · 硬朗 anime cel + painterly 阴影 · 黑红银主调</p>
+        </div>
+        <div class="sh-r">
+          <span class="pri pri-p0">P0</span>
+          <span class="med">动漫</span>
+        </div>
+      </header>
+      
+      <div class="grid2">
+        <section class="block">
+          <h3>服务的 bot 类型 / trope</h3>
+          <ul><li>女向 OC Virtual / marriage 暗黑男主（emochi anime top100 大头）</li><li>日乙国乙游戏 fanart（光与夜之恋 / Hakuoki 类）</li><li>少年漫硬派男主 IP（JJK / 鬼灭 / 文豪 stray dogs）</li></ul>
+        </section>
+        
+        <section class="block">
+          <h3>审美谱系</h3>
+          <ol><li>80s 少年漫硬派线条（北条司 / 高桥留美子男主）</li><li>90s CLAMP 中性美感（《X》《魔卡少女樱》）</li><li>2000s otome game 美男画风（《薄樱鬼》《缘之空》CG）</li><li>2010s dark fantasy 抬头（《Banana Fish》《黑执事》）</li><li>现在 JJK / 鬼灭 / 文豪 stray dogs 系</li></ol>
+        </section>
+      </div>
+      
+      <section class="block">
+        <h3>视觉锚点（训练集应包含的参考来源）</h3>
+        <ol class="anchors"><li>JJK 五条悟 / 夏油杰（hidden inventory arc 的暗调）</li><li>鬼灭无惨 / 童磨 / 黑死牟（暗调反派美学）</li><li>文豪 stray dogs 太宰治 / 中原中也 / 芥川龙之介</li><li>咒术回战漫画原作硬朗线条</li><li>《黑执事》Sebastian / Ciel</li><li>《Banana Fish》Ash Lynx</li><li>《PSYCHO-PASS》狡啮慎也</li><li>《Devilman Crybaby》汤浅政明扁平 + 高饱和暗调</li><li>中国 otome 手游《光与夜之恋》《时空中的绘旅人》立绘</li><li>JJK 同人圈高赞 fanart（pixiv R-18 安全向画师组）</li></ol>
+      </section>
+      
+      <section class="block">
+        <h3>技术参数</h3>
+        <table class="tech"><tbody>
+        <tr><td>调色板</td><td>黑 + 暗红 + 银 / 黑 + 金 / 黑 + 紫</td></tr><tr><td>saturation pop</td><td>红瞳 / 金发 / 一抹腮红 / 嘴角血迹</td></tr><tr><td>线条</td><td>硬朗 anime cel + 偶尔 painterly 阴影</td></tr><tr><td>眼睛</td><td>偏成熟（不是萌系大眼），略细长，眼下卧蚕 / 泪痣强调</td></tr><tr><td>头发</td><td>长发遮眼 / 凌乱前发 / 单色长发</td></tr><tr><td>lighting</td><td>硬光 + 单点 key + 戏剧化阴影</td></tr>
+        </tbody></table>
+      </section>
+      
+      <section class="block anti">
+        <h3>反锚点（不应混入训练集）</h3>
+        <ul><li>✗ Isekai harem 那种&quot;无个性帅哥&quot;模板（金发碧眼勇者）</li><li>✗ 早期 BL 漫画过度纤细化（90s 末-2000s 初 yaoi）</li><li>✗ 中国男频玄幻小说插图（杀马特 / 多色挑染）</li><li>✗ 美式 western anime（《Avatar》圆脸 + 简化五官）</li><li>✗ Vtuber 立绘风（线条太干净，缺戏剧性阴影）</li></ul>
+      </section>
+    </article>
+    
+    <article class="spec" id="anime_sub">
+      <header class="sh">
+        <div class="sh-l">
+          <h2>动漫副轨 · KyoAni 系软光赛璐璐</h2>
+          <p class="tag">京阿尼软光 · 高饱和柔色 · 校园日常 · 米哈游立绘工业 · 萌系大眼</p>
+        </div>
+        <div class="sh-r">
+          <span class="pri pri-p0">P0</span>
+          <span class="med">动漫</span>
+        </div>
+      </header>
+      
+      <div class="grid2">
+        <section class="block">
+          <h3>服务的 bot 类型 / trope</h3>
+          <ul><li>男向虚拟女角色（emochi anime 第二大群体）</li><li>萌系 OC 女主（Original OC 校园 / 日常向）</li><li>米哈游 / Cygames fan-art 偏好用户</li></ul>
+        </section>
+        
+        <section class="block">
+          <h3>审美谱系</h3>
+          <ol><li>90s 萌系奠基（CLAMP《CCS》/ 赤松健《Love Hina》）</li><li>2000s 京阿尼软光革命（《凉宫春日》《Clannad》《K-On!》）</li><li>2010s PA Works 日常系（《白箱》《樱花任务》）</li><li>米哈游 + Cygames 手游立绘工业化（2018+）</li><li>现在&quot;软光 + 高饱和 + 日常系&quot;主流</li></ol>
+        </section>
+      </div>
+      
+      <section class="block">
+        <h3>视觉锚点（训练集应包含的参考来源）</h3>
+        <ol class="anchors"><li>京阿尼《Hibike! Euphonium》《K-On!》《Sound! Euphonium》全系列</li><li>PA Works《白箱》《樱花任务》《Iroduku》</li><li>《孤独摇滚》(Bocchi the Rock) 整片美术</li><li>《Lycoris Recoil》锦木千束 / 井上泷奈</li><li>《BanG Dream!》《Lovelive》系列演唱会立绘</li><li>米哈游《原神》《崩坏：星穹铁道》女性角色立绘</li><li>Cygames《赛马娘》《公主连结》立绘</li><li>CygamesPictures《Princess Connect》动画</li><li>《路人女主的养成方法》深崎暮人画风</li><li>国产二次元《明日方舟》干员立绘</li></ol>
+      </section>
+      
+      <section class="block">
+        <h3>技术参数</h3>
+        <table class="tech"><tbody>
+        <tr><td>调色板</td><td>高饱和柔色 / 粉 + 蓝 + 绿 + 橘 四主色系</td></tr><tr><td>光质</td><td>软光 + 大量环境光（无强阴影对比）</td></tr><tr><td>眼睛</td><td>大眼 + 高反光 + 双层瞳孔渐变</td></tr><tr><td>线条</td><td>圆润 cel-shading + 高饱和填色</td></tr><tr><td>服装</td><td>校服 / JK / 制服 / 日常便服</td></tr><tr><td>比例</td><td>稍大头 / 软萌少女体型</td></tr>
+        </tbody></table>
+      </section>
+      
+      <section class="block anti">
+        <h3>反锚点（不应混入训练集）</h3>
+        <ul><li>✗ 露骨 ecchi / 巨胸贫乳极端化（《To Love Ru》《High School DxD》方向）</li><li>✗ 美式 anime（《Avatar》《RWBY》）</li><li>✗ Vtuber 立绘风（眼睛比例不对，过于扁平）</li><li>✗ 同人志成人本风（线条质量与商业立绘有 gap）</li><li>✗ 韩漫女主画风（与日漫萌系混训会污染）</li></ul>
+      </section>
+    </article>
+    
+    <article class="spec" id="anime_third">
+      <header class="sh">
+        <div class="sh-l">
+          <h2>动漫第三类 · 国风网红动漫风</h2>
+          <p class="tag">光与夜之恋 / 时空中的绘旅人 / 抖音二次元 LoRA · anime 萌系 × 抖红美颜 hybrid</p>
+        </div>
+        <div class="sh-r">
+          <span class="pri pri-p1">P1（国内扩量）</span>
+          <span class="med">动漫</span>
+        </div>
+      </header>
+      
+      <div class="grid2">
+        <section class="block">
+          <h3>服务的 bot 类型 / trope</h3>
+          <ul><li>国内 / 东亚扩量后的二次元用户</li><li>中国 otome 手游受众</li><li>抖音二次元同人画师圈受众</li></ul>
+        </section>
+        
+        <section class="block">
+          <h3>审美谱系</h3>
+          <ol><li>90s 末 - 2000s 国产 RPG 立绘（仙剑 / 轩辕剑）</li><li>2010s 国产手游立绘工业化</li><li>中国 otome 手游崛起（《恋与制作人》2017 → 《光与夜之恋》《时空中的绘旅人》）</li><li>抖音 / 小红书&quot;二次元同人 LoRA&quot;美颜化（2023+）</li><li>&quot;anime 萌系 × 真人美颜&quot;hybrid 美学</li></ol>
+        </section>
+      </div>
+      
+      <section class="block">
+        <h3>视觉锚点（训练集应包含的参考来源）</h3>
+        <ol class="anchors"><li>《光与夜之恋》5 男主立绘（现代向 + 美颜化二次元）</li><li>《时空中的绘旅人》立绘</li><li>《恋与制作人》李泽言 / 周棋洛 / 许墨 / 白起</li><li>《以闪亮之名》换装立绘</li><li>抖音&quot;二次元 LoRA&quot;同人圈 top 画师</li><li>小红书&quot;二次元穿搭&quot;博主插画</li><li>国风同人圈 OC（hanfu + 大眼 + V-line）</li><li>《时光代理人》风格（国产动画偏 modern OC）</li></ol>
+      </section>
+      
+      <section class="block">
+        <h3>技术参数</h3>
+        <table class="tech"><tbody>
+        <tr><td>眼睛</td><td>比 KyoAni 萌系更大 + 睫毛更夸张 + 双反光</td></tr><tr><td>jawline</td><td>削得比 JJK 还尖（接近真人 C 的 V-line 比例）</td></tr><tr><td>头发</td><td>&quot;网红水波纹&quot;曲线，不是 anime 标准直发</td></tr><tr><td>服装</td><td>Y2K + lolita + Hanfu + cottage-core mix</td></tr><tr><td>色彩</td><td>比 KyoAni 副轨高饱和，&quot;sweet pop&quot;系</td></tr><tr><td>整体逻辑</td><td>anime 萌系骨架 + 抖红美颜叠加</td></tr>
+        </tbody></table>
+      </section>
+      
+      <section class="block anti">
+        <h3>反锚点（不应混入训练集）</h3>
+        <ul><li>✗ 日本萌系直接复刻（属于动漫副轨）</li><li>✗ 少年漫硬派暗黑（属于动漫主轨）</li><li>✗ 过度真人化（变成真人 C 美颜风）</li><li>✗ 欧美 western anime（差异太大）</li></ul>
+      </section>
+    </article>
+    
+
+<section style="margin-top:64px">
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid #e8e4dd">Cross-cutting 原则</h2>
+  <section class="cross"><h3>为什么不能用一个 base + LoRA 切换</h3><p>三类用户的偏好是<strong>分裂的，不是 spectrum</strong>。喜欢日韩氧气感的用户觉得抖红网红"假"；喜欢抖红的觉得日韩氧气"不够精致"；喜欢危险风的对前两类无感。
+<br/><br/>
+所以训练必须每个 sub-spec 独立 base，不能 fine-tune 同一个 base 用 LoRA 切风格 —— 用户对"风格切换中间地带"是 zero tolerance 的。这点对训练 cost + 资源调配影响很大，必须提前算进去。</p></section><section class="cross"><h3>Cross-medium grammar 共享</h3><p><strong>底层视觉 grammar 在真人和动漫之间是共享的</strong>，但每个 sub-spec 的训练必须独立：
+<br/><br/>
+• 真人 A ↔ 动漫副：软光 + 日常 + 无攻击性精致<br/>
+• 真人 B ↔ 动漫主：硬光 + 单点 key + 危险氛围<br/>
+• 真人 C ↔ 动漫第三：美颜化 + 高饱和 + sweet pop
+<br/><br/>
+共享 grammar 的 implication：<strong>dataset curation 标准 / quality eval rubric 可以 cross-medium 共享</strong>，但用户偏好建模必须分开 —— 不能假设"用户喜欢真人 A 就也喜欢动漫副"。</p></section><section class="cross"><h3>训练优先级</h3><p><strong>P0（海外现状用户）</strong>：真人 A + 真人 B + 动漫主 + 动漫副 = 4 个 model<br/>
+<strong>P1（东亚 / 国内扩量）</strong>：+ 真人 C + 动漫第三类 = 6 个 model
+<br/><br/>
+海外现状的 emochi top100 真人 bot：菲律宾 13% + 巴西 / 墨西哥 / 印度 / 美国 主导，中国大陆几乎不可见。所以 P1 的两个 model 严格说不是 must-have，但 TikTok 美学的辐射可能让东南亚用户里也有一定比例 —— 建议跑 prompt keyword 分析（"big eyes / sparkly / kawaii / V-line"）+ 触发用户地域分布 verify 后再决定要不要把 P1 提前。</p></section><section class="cross"><h3>关键原则：训练集 = 美学固化</h3><p><strong>你选什么图喂进去，模型就长成什么样。</strong> 选错一张高赞但不符合谱系的图，污染面积可能很大。
+<br/><br/>
+所以每个 sub-spec 都需要一个<strong>美术总监级的人</strong>做 dataset curation，不能 crowdsource，不能 web scraping 一把梭。这是比模型结构选择更重要的事。
+<br/><br/>
+另一个 bias trap：训练人选图时容易把"自己的审美偏好"当成"客观好坏标准"。本 brief 的反锚点列表如果出现"我的偏好 disguised as 普遍标准"的地方，欢迎产品端 push back —— 实际用户偏好 ≠ 训练者偏好。</p></section><section class="cross"><h3>评估方法（emochi-specific）</h3><p>常规 T2I 评测（DreamBench++ / CLIP score）不适合 emochi，因为这些 metric 测的是"prompt fidelity"和"general quality"，不是"用户对这个 trope 的 emotional response"。
+<br/><br/>
+建议 emochi-specific eval：<br/>
+• 每个 sub-spec 配 30-50 个 representative bot scenario（如真人 B 配 "mafia 男主雨夜对峙" / "CEO 办公室对视" / "Werewolf 暴雪救援"）<br/>
+• 每个 scenario 跑 4 个候选模型生成<br/>
+• 给目标用户群（如真人 B 给 emochi dark romance 重度用户）盲选<br/>
+• 用<strong>用户偏好排序</strong>而不是绝对分数评估
+<br/><br/>
+这种 eval 慢且贵，但是唯一能反映 emochi 实际使用价值的 metric。</p></section>
+</section>
+
+<footer>
+  Brief 2026-05-18 · 助手 × Rian · 6 sub-specs · forward to training team
+</footer>
+</div>
+</body></html>
