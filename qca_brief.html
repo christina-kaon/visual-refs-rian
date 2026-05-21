@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Emochi 生图模型理想态 · Quality / Content / Aesthetics 三层 brief</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:'Inter','Noto Sans SC',-apple-system,'PingFang SC',sans-serif;background:#faf9f7;color:#1f1d1a;font-size:14px;line-height:1.65}
+.page{max-width:960px;margin:0 auto;padding:48px 32px}
+header.top{margin-bottom:36px;border-bottom:1px solid #e8e4dd;padding-bottom:20px}
+header.top .eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#c96442;font-weight:600;margin-bottom:8px}
+header.top h1{margin:0;font-size:28px;font-weight:700;line-height:1.25}
+header.top .sub{margin:6px 0 0;font-size:14px;color:#6b6862}
+.callout{background:#f6ece6;border-left:3px solid #c96442;padding:16px 20px;border-radius:0 8px 8px 0;margin-bottom:36px;font-size:13px;line-height:1.7}
+.callout h2{margin:0 0 8px;font-size:14px;color:#c96442;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+.toc{background:#fff;border:1px solid #e8e4dd;border-radius:12px;padding:18px 22px;margin-bottom:36px;font-size:13.5px}
+.toc h3{margin:0 0 10px;font-size:12px;color:#94918a;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+.toc a{color:#1f1d1a;text-decoration:none;border-bottom:1px dotted #c8c4bd}
+.toc a:hover{border-bottom-color:#c96442;color:#c96442}
+.medium{margin-bottom:48px}
+.mh{font-size:24px;font-weight:700;margin:0 0 20px;padding-bottom:10px;border-bottom:2px solid #1f1d1a}
+.layer{background:#fff;border:1px solid #e8e4dd;border-radius:16px;margin-bottom:20px;overflow:hidden}
+.lh{background:var(--bg);color:#fff;padding:18px 26px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.lh-l h3{margin:0;font-size:18px;font-weight:700}
+.lh-l .tag{margin:4px 0 0;font-size:13px;opacity:.9;line-height:1.5}
+.ach{flex-shrink:0;font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.2);color:#fff;letter-spacing:.04em}
+.cris{padding:18px 26px}
+.cri{display:flex;gap:18px;padding:10px 0;border-bottom:1px solid #f0ebe2;font-size:13px}
+.cri:last-child{border-bottom:0}
+.cri-l{flex-shrink:0;width:200px;font-weight:600;color:#1f1d1a}
+.cri-r{flex:1;color:#3d3a35}
+.bk{background:#fbf6f0;padding:14px 26px;border-top:1px solid #f0ebe2;font-size:12.5px;color:#6b6862;line-height:1.7}
+.bk strong{color:#c96442}
+.bk a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
+.cross{background:#fff;border:1px solid #e8e4dd;border-radius:16px;padding:24px 28px;margin-bottom:20px}
+.cross h3{margin:0 0 12px;font-size:16px;font-weight:600;color:#c96442}
+.cross p,.cross div{margin:0;font-size:13.5px;line-height:1.7}
+.cross table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12.5px}
+.cross th,.cross td{padding:8px 10px;border-bottom:1px solid #e8e4dd;text-align:left;vertical-align:top}
+.cross th{background:#f6ece6;color:#c96442;font-weight:600}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid #e8e4dd;text-align:center;font-size:12px;color:#94918a}
+@media (max-width:680px){.cri{flex-direction:column;gap:4px}.cri-l{width:auto}.lh{flex-direction:column}}
+</style>
+</head><body>
+<div class="page">
+<header class="top">
+  <div class="eyebrow">EMOCHI · IMAGE MODEL IDEAL STATE · Q/C/A LAYERS · 2026-05-21</div>
+  <h1>Emochi 生图模型理想态 · 三层目标</h1>
+  <div class="sub">质量 / 内容 / 审美 三层划分 · 真人 + 动漫各一份 · 与离线 benchmark 维度对齐</div>
+</header>
+
+<section class="callout">
+  <h2>TL;DR</h2>
+  
+<ul style="margin:0;padding-left:22px">
+<li><strong>三层划分</strong>：质量（基础门槛）→ 内容（能力覆盖）→ 审美（风格轨道）。达成度递增。</li>
+<li><strong>质量</strong>映射到离线 benchmark D1（角色一致性）+ D4（画面质量），有 hard penalty 阈值</li>
+<li><strong>内容</strong>映射到 D2（剧情匹配）+ D3（trope 覆盖），需要 stratified test set 覆盖 emochi 真实 trope 分布</li>
+<li><strong>审美</strong>映射到 D3（风格匹配），3 真人 + 3 动漫 = 6 个 sub-spec 独立 model（详细参考系见 <a href="brief.html">visual style brief</a>）</li>
+<li>训练 artifact 总数估算：1 base + 8 content LoRA + 6 aesthetics sub-spec = <strong>~15 个</strong></li>
+</ul>
+
+</section>
+
+<div class="toc">
+  <h3>目录</h3>
+  <ol style="margin:0;padding-left:20px">
+    <li><a href="#真人">真人理想态</a> · Quality → Content → Aesthetics</li>
+    <li><a href="#动漫">动漫理想态</a> · Quality → Content → Aesthetics</li>
+    <li><a href="#cross">Cross-cutting 原则</a> · 难度递增 + benchmark mapping + 评估方法 + 训练流程</li>
+  </ol>
+</div>
+
+
+    <section class="medium" id="真人">
+      <h2 class="mh">真人理想态</h2>
+      
+    <section class="layer" style="--bg:#5a6a82">
+      <header class="lh">
+        <div class="lh-l">
+          <h3>质量层 · Quality</h3>
+          <p class="tag">基础技术门槛 · 不达标不入训练集 / benchmark 直接扣分</p>
+        </div>
+        <span class="ach ach-0">达成 易</span>
+      </header>
+      <div class="cris">
+        <div class="cri"><div class="cri-l">解剖学正确</div><div class="cri-r">手指 5 根 / 关节比例合理 / 五官对称 / 脖子 + 肩 + 躯干无错位</div></div><div class="cri"><div class="cri-l">物理一致性</div><div class="cri-r">光影方向单源 / 阴影投射正确 / 镜面反射逻辑 / 重力服装垂坠</div></div><div class="cri"><div class="cri-l">高分辨率纹理</div><div class="cri-r">皮肤毛孔可见（非磨皮档）/ 织物纹理清晰 / 头发丝可分</div></div><div class="cri"><div class="cri-l">无 AI artifacts</div><div class="cri-r">背景不糊烂 / 没怪手 / 没文字乱码 / 没多余肢体 / 配饰不熔</div></div><div class="cri"><div class="cri-l">字符比例</div><div class="cri-r">肩宽 / 躯干 / 腿长在真实人体比例 ±10%</div></div><div class="cri"><div class="cri-l">角色一致性 (D1)</div><div class="cri-r">与 ref 的 face IP match ≥ 3/4 — 五官 / 发色 / 体型可识别</div></div><div class="cri"><div class="cri-l">画面质量 (D4)</div><div class="cri-r">锐度 / 色彩饱和 / 整体完成度 ≥ 3/4</div></div>
+      </div>
+      <div class="bk">
+        <strong>↪ Benchmark hook</strong>: D1（角色一致性，权重 0.30）+ D4（画面质量，权重 0.15）= 直接评分。Quality 不达标 → hard penalty：D4 ≤ 3 封顶 5 / D1 ≤ 3 封顶 4。
+      </div>
+    </section>
+      
+    <section class="layer" style="--bg:#c96442">
+      <header class="lh">
+        <div class="lh-l">
+          <h3>内容层 · Content</h3>
+          <p class="tag">能力覆盖清单 · 确保模型&quot;能生成&quot;emochi 实际线上场景</p>
+        </div>
+        <span class="ach ach-1">达成 中</span>
+      </header>
+      <div class="cris">
+        <div class="cri"><div class="cri-l">Trope 覆盖（基于真人 top100）</div><div class="cri-r">Mafia / Werewolf / CEO / 黑帮 / 校园 / 王室 / 暗黑 / Boyfriend Material 日常 / 名人 (BTS celebrity 占 9/100) / 师生 / 同居 / 偶像 / 救赎</div></div><div class="cri"><div class="cri-l">场景覆盖</div><div class="cri-r">餐厅 / 雨夜 / 车内 / 顶层公寓 / 教堂 / 卧室 / 街道 / 健身房 / 浴室 / 咖啡店 / 教室 / 站台 / 派对 / 酒吧</div></div><div class="cri"><div class="cri-l">服装覆盖</div><div class="cri-r">西装 / 风衣 / 衬衫 / 制服 / 卫衣 / oversized T / 棒球帽 / 健身服 / NSFW lingerie / 婚服 / 校服 / 西装马甲</div></div><div class="cri"><div class="cri-l">姿态覆盖</div><div class="cri-r">站立 / 坐姿 / 躺 / 拥抱 / kiss / 镜子自拍 / 暧昧贴近 / 战斗 / 跪 / 推墙 / 抱起 / lap_pillow</div></div><div class="cri"><div class="cri-l">表情覆盖</div><div class="cri-r">seductive / smug / 危险 / 温柔 / 愤怒 / 哭 / 笑 / 绝望 / blush / 困惑 / 戏谑 / 阴沉</div></div><div class="cri"><div class="cri-l">NSFW 覆盖 (18.7% 占比)</div><div class="cri-r">必须能生成 cinematic 质感的 NSFW，不是 amateur 影像感 —— 嫁接到 cinematic dim lighting 基底</div></div><div class="cri"><div class="cri-l">多人构图</div><div class="cri-r">solo / 2 人对视 / 3+ 人群像（mafia gang / harem / 多攻一守）</div></div><div class="cri"><div class="cri-l">Shot angle</div><div class="cri-r">close_up / mid_shot / full_body / wide / low_angle / mirror_selfie / behind_shot</div></div>
+      </div>
+      <div class="bk">
+        <strong>↪ Benchmark hook</strong>: D2（剧情匹配，权重 0.30）+ D3（视觉吸引力 trope 维度）。Content 评估 = 给定剧情上下文，能否生成该 trope/setting 的代表性图。建议测试集按 trope × scene × shot_angle 三维 stratified sample。
+      </div>
+    </section>
+      
+    <section class="layer" style="--bg:#7c4858">
+      <header class="lh">
+        <div class="lh-l">
+          <h3>审美层 · Aesthetics</h3>
+          <p class="tag">风格轨道定义 · 决定 dataset 选择 / evaluation criteria / 反向剔除</p>
+        </div>
+        <span class="ach ach-2">达成 难</span>
+      </header>
+      <div class="cris">
+        <div class="cri"><div class="cri-l">真人 A · 日韩氧气感 selca</div><div class="cri-r">K-pop / NewJeans / IU 自然光谱系 · 软光颗粒 · 居家场景 · 无攻击性精致 · P0</div></div><div class="cri"><div class="cri-l">真人 B · cinematic 危险风</div><div class="cri-r">硬光大反差 · 单点 key · 雨夜霓虹 · 黑帮 / mafia / dark romance · 跨欧美 + 韩港 · P0</div></div><div class="cri"><div class="cri-l">真人 C · 抖红 / 小红书美颜风</div><div class="cri-r">大眼磨皮 V-line · 居家手机直拍 · cottage-core / Y2K / kawaii · &quot;真人版 anime 萌系&quot; · P1（东亚扩量）</div></div>
+      </div>
+      <div class="bk">
+        <strong>↪ Benchmark hook</strong>: D3（视觉吸引力，权重 0.25）= 风格匹配评分。三个 sub-spec 必须独立训练 + 独立评分 —— 用户偏好分裂（A 用户觉得 C 假 / C 觉得 A 朴素 / B 用户对前两类无感）。详细审美参考系：<a href="brief.html">visual style brief</a>。
+      </div>
+    </section>
+    </section>
+
+    <section class="medium" id="动漫">
+      <h2 class="mh">动漫理想态</h2>
+      
+    <section class="layer" style="--bg:#5a6a82">
+      <header class="lh">
+        <div class="lh-l">
+          <h3>质量层 · Quality</h3>
+          <p class="tag">基础技术门槛 · 不达标不入训练集 / benchmark 直接扣分</p>
+        </div>
+        <span class="ach ach-0">达成 易</span>
+      </header>
+      <div class="cris">
+        <div class="cri"><div class="cri-l">线条 consistency</div><div class="cri-r">cel-shading 线条无断裂 / 无锯齿 / 线宽 consistent</div></div><div class="cri"><div class="cri-l">Anime 解剖学</div><div class="cri-r">anime 比例的解剖学（不是写实），眼距 / 头肩比例正确</div></div><div class="cri"><div class="cri-l">颜色填色</div><div class="cri-r">cell shading 区域分明 / 无 color spillover / 阴影色和主色 harmony</div></div><div class="cri"><div class="cri-l">阴影 + 高光</div><div class="cri-r">方向一致 / 高光位置合理 / 双层瞳孔渐变正确</div></div><div class="cri"><div class="cri-l">无 AI artifacts</div><div class="cri-r">手指 / 头发 / 配饰 / 武器 不变形 / 武器细节不熔</div></div><div class="cri"><div class="cri-l">比例</div><div class="cri-r">主轨头身比 6-8:1（成熟美男）；副轨 4-5:1（萌系大头）；不能混</div></div><div class="cri"><div class="cri-l">角色一致性 (D1)</div><div class="cri-r">与 ref 的设定一致 ≥ 3/4 — 发色 / 瞳色 / 服饰 / 标志性配件</div></div><div class="cri"><div class="cri-l">画面质量 (D4)</div><div class="cri-r">线条完成度 / 上色干净度 ≥ 3/4</div></div>
+      </div>
+      <div class="bk">
+        <strong>↪ Benchmark hook</strong>: D1（0.30）+ D4（0.15）。Anime 的 D4 评估和真人不同 —— 重点是 "线条 + 上色" 而不是 "光影 + 纹理"。需要 anime-specific D4 rubric。
+      </div>
+    </section>
+      
+    <section class="layer" style="--bg:#c96442">
+      <header class="lh">
+        <div class="lh-l">
+          <h3>内容层 · Content</h3>
+          <p class="tag">能力覆盖清单 · 确保模型&quot;能生成&quot;emochi 实际线上场景</p>
+        </div>
+        <span class="ach ach-1">达成 中</span>
+      </header>
+      <div class="cris">
+        <div class="cri"><div class="cri-l">Trope 覆盖（基于 anime top100）</div><div class="cri-r">marriage（西语 + 阿语 OC 大头）/ OC Virtual / Multi-Character / Anime/Manga IP（JJK / 鬼灭 / 文豪 etc.）/ mafia / werewolf / 暗黑奇幻 / 萌系日常 / 校园 / 异世界 / 神官战士</div></div><div class="cri"><div class="cri-l">场景覆盖</div><div class="cri-r">fantasy_world / 古风宫殿 / 现代教室 / dungeon / 异世界 / 城堡 / 神社 / 中世纪 / 战场 / 城邦 / 学院 / 修道院</div></div><div class="cri"><div class="cri-l">服装覆盖</div><div class="cri-r">黑色制服 / 校服 / hanfu / kimono / fantasy_armor / 中世纪 / lolita / JK / 暗黑 otome 服 / 神官服 / 战斗服 / 学院制服</div></div><div class="cri"><div class="cri-l">姿态覆盖</div><div class="cri-r">anime 战斗 / 拔剑 / 拥抱 / kiss / 半跪 / 治愈姿势 / chibi pose / 飞行 / 异能蓄力</div></div><div class="cri"><div class="cri-l">表情覆盖</div><div class="cri-r">anime expression: seductive / blush / smug / yandere / kuudere / tsundere / 困惑 / 哭 / 笑 / 杀气 / 绝对零度</div></div><div class="cri"><div class="cri-l">武器 / 道具</div><div class="cri-r">剑 / 魔法阵 / 武士刀 / 杖 / 异能特效 / 翅膀 / 兽耳 / 神器 / 召唤兽</div></div><div class="cri"><div class="cri-l">NSFW（与真人不同 grammar）</div><div class="cri-r">anime NSFW 是另一套审美：更高 saturation / 更夸张构图 / 经常 fantasy 场景 / cell-shaded 而非真实纹理</div></div><div class="cri"><div class="cri-l">多人构图</div><div class="cri-r">solo / 双人 / 群像 / 战斗群像 / chibi 群像 / harem</div></div><div class="cri"><div class="cri-l">Shot angle</div><div class="cri-r">close_up / battle_wide / mid / full / chibi_small / dramatic_low / 飞行视角</div></div>
+      </div>
+      <div class="bk">
+        <strong>↪ Benchmark hook</strong>: D2（剧情匹配）+ D3（视觉吸引力 trope 维度）。Anime 的剧情匹配需要识别 "fantasy 场景 vs 现实场景"，"战斗 vs 日常"，"chibi vs 写实比例" 这些 anime-specific 切换。
+      </div>
+    </section>
+      
+    <section class="layer" style="--bg:#7c4858">
+      <header class="lh">
+        <div class="lh-l">
+          <h3>审美层 · Aesthetics</h3>
+          <p class="tag">风格轨道定义 · 决定 dataset 选择 / evaluation criteria / 反向剔除</p>
+        </div>
+        <span class="ach ach-2">达成 难</span>
+      </header>
+      <div class="cris">
+        <div class="cri"><div class="cri-l">动漫主轨 · 日乙国乙暗黑系美男</div><div class="cri-r">JJK / 鬼灭 / 文豪 / dark otome · 硬朗 anime cel + painterly 阴影 · 黑红银主调 · 女向 65% · P0</div></div><div class="cri"><div class="cri-l">动漫副轨 · KyoAni 系软光赛璐璐</div><div class="cri-r">京阿尼软光 / 高饱和柔色 / 校园日常 / 米哈游立绘 / 萌系大眼 · 男向 30% · P0</div></div><div class="cri"><div class="cri-l">动漫第三类 · 国风网红动漫风</div><div class="cri-r">光与夜之恋 / 时空中的绘旅人 / 抖音二次元同人 LoRA · anime 萌系 × 抖红美颜 hybrid · P1（国内扩量）</div></div>
+      </div>
+      <div class="bk">
+        <strong>↪ Benchmark hook</strong>: D3（0.25）。三个 sub-spec 独立训练（不能混 dataset，否则会 mode collapse 成 "美少女男主" 这种诡异风格）。
+      </div>
+    </section>
+    </section>
+
+<section id="cross" style="margin-top:48px">
+  <h2 class="mh">Cross-cutting 原则</h2>
+  <section class="cross"><h3>三层难度递增的原因</h3><div>
+<strong>质量易</strong>：靠 model architecture + 大 dataset + 训练算力就能达到。Stable Diffusion / Midjourney 主流模型都已 80%+ 解决。
+<br/><br/>
+<strong>内容中</strong>：靠 dataset 多样性 + tag 覆盖完整。但要做对 trope-specific 的小众 setting（如 "werewolf 雪夜营救" 这种很 niche 的场景）需要主动 curation，不是 web scrape 一把梭能搞定的。
+<br/><br/>
+<strong>审美难</strong>：靠美术总监级的 dataset 筛选 + 反锚点剔除。这是 emochi 真正的差异化 —— 通用 T2I 模型不会专门为 K-pop fan-edit candid 美学 curate dataset，所以 emochi 做得对就是壁垒。
+</div></section><section class="cross"><h3>三层 vs 离线 benchmark 维度 mapping</h3><div>
+| 三层目标 | benchmark 维度 | 权重 | 评分方式 |
+|---|---|---|---|
+| 质量 Quality | D1 角色一致性 + D4 画面质量 | 0.30 + 0.15 | VLM 0-4 评分 + hard penalty 阈值 |
+| 内容 Content | D2 剧情匹配（trope 覆盖） | 0.30 | VLM 评 trope/scene 是否 match |
+| 审美 Aesthetics | D3 视觉吸引力（风格匹配） | 0.25 | VLM 评 + 风格 sub-spec 分类 |
+<br/>
+<strong>评分流程</strong>：先 gate by Quality（不过门槛直接退回），然后 Content + Aesthetics 加权 composite。Aesthetics 在产品端额外做 sub-spec routing（同一个 prompt 在不同 sub-spec model 下给不同结果，A/B test 让用户选）。
+</div></section><section class="cross"><h3>评估方法（emochi-specific）</h3><div>
+常规 T2I 评测（DreamBench++ / CLIP score）不适合 —— 测的是 prompt fidelity 和 general quality，不是 emochi 用户对 trope 的 emotional response。
+<br/><br/>
+建议 emochi-specific eval：
+<br/>
+1. <strong>质量</strong>：100 条 calibration set 跑 VLM judge，Pearson 已实测 D1 0.85 / D3 0.18 / D4 0.07（D3 D4 Pearson 低意味着这两个维度 VLM 不太可靠，需要更多人工 anchor）<br/>
+2. <strong>内容</strong>：按 trope × scene × shot_angle 三维 stratified sample 50-100 条/维度，确保每个组合至少 5 张 representative<br/>
+3. <strong>审美</strong>：每个 sub-spec 配 30-50 个 representative scenario，给目标用户群盲选（不能用 VLM 评，VLM 没有 K-pop fan 的 aesthetic sense）
+</div></section><section class="cross"><h3>训练流程的层级 implication</h3><div>
+<strong>质量层</strong>：上 base model architecture + 通用大 dataset。SDXL / Flux 等开源基础足够。
+<br/><br/>
+<strong>内容层</strong>：在 base 上做 trope-specific LoRA fine-tuning。每个 trope category 准备 200-500 张精选样本。
+<br/><br/>
+<strong>审美层</strong>：每个 sub-spec 独立训练 base / 独立 LoRA，<strong>不能共享</strong>。每个 sub-spec 需要美术总监级的 dataset curation（200-1000 张精选 reference），同时主动剔除反锚点样本。
+<br/><br/>
+所以训练 cost 估算：base 1 个 + content LoRA × 8（每 trope 一个） + aesthetics × 6（3 真人 + 3 动漫 sub-spec）= 共 15 个模型 artifact。资源调配要按这个数算。
+</div></section>
+</section>
+
+<footer>
+  Brief 2026-05-21 · 助手 × Rian · Q/C/A 3 层 × 真人 + 动漫 2 medium · forward to training team<br/>
+  关联文档：<a href="brief.html">6 sub-spec visual style brief</a> · <a href="handover.html">benchmark 完整交接</a>
+</footer>
+</div>
+</body></html>
