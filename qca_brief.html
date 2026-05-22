@@ -197,7 +197,7 @@ footer{margin-top:48px;padding-top:20px;border-top:1px solid #e8e4dd;text-align:
 <br/><br/>
 建议 emochi-specific eval：
 <br/>
-1. <strong>质量</strong>：100 条 calibration set 跑 VLM judge，Pearson 已实测 D1 0.85 / D3 0.18 / D4 0.07（D3 D4 Pearson 低意味着这两个维度 VLM 不太可靠，需要更多人工 anchor）<br/>
+1. <strong>质量</strong>：n=30 人工 calibration 实测 (李承燕 2026-04-27)，per-dim VLM Pearson <strong>D1 0.28 / D2 0.23 / D3 0.34 / D4 ~0</strong>（4 个维度 single-model 都不到 reliable 水平）。hard penalty ensemble 能把 composite 拉到 <strong>0.43</strong>。剩 70 条标完后重新跑，并且需要按 binary observable feature 重写 D4 prompt<br/>
 2. <strong>内容</strong>：按 trope × scene × shot_angle 三维 stratified sample 50-100 条/维度，确保每个组合至少 5 张 representative<br/>
 3. <strong>审美</strong>：每个 sub-spec 配 30-50 个 representative scenario，给目标用户群盲选（不能用 VLM 评，VLM 没有 K-pop fan 的 aesthetic sense）
 </div></section><section class="cross"><h3>训练流程的层级 implication</h3><div>
