@@ -112,9 +112,9 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
       <p class="why"><strong>WHY</strong>：不是主流，但能体现模型审美覆盖面。当 P0+P1 跑稳后，作为 &quot;model 能力测试集&quot; 的 edge case，不投资源训练</p>
       <table>
         <thead><tr><th>项</th><th>级别</th><th>训练思路</th></tr></thead>
-        <tbody><tr><td><strong>动漫 · 美漫 2D (Hazbin/Arcane)</strong></td><td><span class="lvl lvl-p2">P2</span></td><td>北美亚文化粉丝粘性高但 emochi 海外用户群里占比小。可用通用 anime base + 后期 LoRA</td></tr><tr><td><strong>动漫 · 游戏厚涂 2D（西式概念画）</strong></td><td><span class="lvl lvl-p2">P2</span></td><td>英雄联盟 / Dota2 玩家群 niche</td></tr><tr><td><strong>动漫 · 游戏 2.5D (Spider-Verse)</strong></td><td><span class="lvl lvl-p2">P2</span></td><td>混合媒材 niche，emochi 用户极少</td></tr><tr><td><strong>&quot;其他&quot; 兜底（亚文化 dreamcore/vaporwave）</strong></td><td><span class="lvl lvl-p2">P2</span></td><td>不投训练，作为能力测试用</td></tr><tr><td><strong>真人高清艺术摄影</strong></td><td><span class="lvl lvl-p3-砍">P3-砍</span></td><td>emochi 用户 0 需求验证：editorial 0.14% / magazine 0.18% / studio 0.58%。建议直接砍</td></tr><tr><td><strong>真人 3A 游戏建模</strong></td><td><span class="lvl lvl-p3-砍">P3-砍</span></td><td>emochi 用户 0 需求验证：3d_render 0.01% / game_art 0% / GQ 0%。建议直接砍</td></tr></tbody>
+        <tbody><tr><td><strong>动漫 · 美漫 2D (Hazbin/Arcane)</strong></td><td><span class="lvl lvl-p2">P2</span></td><td>北美亚文化粉丝粘性高但 emochi 海外用户群里占比小。可用通用 anime base + 后期 LoRA</td></tr><tr><td><strong>动漫 · 游戏厚涂 2D（西式概念画）</strong></td><td><span class="lvl lvl-p2">P2</span></td><td>英雄联盟 / Dota2 玩家群 niche</td></tr><tr><td><strong>动漫 · 游戏 2.5D (Spider-Verse)</strong></td><td><span class="lvl lvl-p2">P2</span></td><td>混合媒材 niche，emochi 用户极少</td></tr><tr><td><strong>&quot;其他&quot; 兜底（亚文化 dreamcore/vaporwave）</strong></td><td><span class="lvl lvl-p2">P2</span></td><td>不投训练，作为能力测试用</td></tr><tr><td><strong>真人高清艺术摄影</strong></td><td><span class="lvl lvl-p0-filler">P0-filler</span></td><td>**修正 v0.2**：不作为产品端流派 (用户没需求 confirmed)，但作为 **Stage 1-2 base pretrain + Quality SFT 阶段的训练填充物** 大量喂入 — 网上最易获取的高质感真人样本，作为 quality anchor。**在 Aesthetics Dark Romance LoRA 阶段可小比例混入 (caption 标 &quot;studio-quality baseline&quot; 不标 &quot;dark romance ref&quot;)**。在其他 sub-spec LoRA 阶段反锚点剔除</td></tr><tr><td><strong>真人 3A 游戏建模</strong></td><td><span class="lvl lvl-p0-filler">P0-filler</span></td><td>同上逻辑：不作为产品流派，作为 Quality 训练填充物可以喂 (材质 / 光影 / anatomy 这些底层信号高质量) — 但要 caption 严格标注 &quot;non-photo 3D render&quot;，避免污染真人 cinematic 输出</td></tr></tbody>
       </table>
-      <p class="cost"><strong>资源</strong>：不投训练资源。P2 仅作为 prompt 端的 LoRA hotswap 可选项</p>
+      <p class="cost"><strong>资源</strong>：P2 流派不投 sub-spec LoRA。但 P0-filler 类（艺术摄影 / 3A 建模）在 base pretrain + Quality SFT 阶段是**重要 data 来源** — 因为这是网上最易拿到的高质感真人样本。这是 Rian 5/25 push back 后修正的判断</p>
     </section>
 
 <section class="training">
@@ -162,6 +162,26 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
 <li><strong>新 trope/scene 增补</strong>：用户 chat 内容里的新热点（如新 IP 上线）触发 incremental SFT</li>
 </ul>
 
+</section>
+
+<section class="training">
+<h2>训练 data 用法分层（v0.2 新增）</h2>
+<p style="font-size:13.5px;line-height:1.7"><strong>核心洞察（来自 Rian 5/25）</strong>："用户需求"和"训练数据需求"不是同一件事。用户没需求的风格 (e.g. 高清艺术摄影) 不能直接砍 — 它在不同训练阶段有不同角色。</p>
+
+<table>
+<thead><tr><th>训练阶段</th><th>data 角色</th><th>高清艺术摄影 / GQ / Vogue</th><th>3A 游戏建模 / CG</th><th>非 emochi trope 但高质感样本</th></tr></thead>
+<tbody>
+<tr><td><strong>Stage 1 base pretrain</strong></td><td>通用图像理解 + 高质量 baseline</td><td>✅ <strong>大量喂</strong>，作为 "高质感真人" 学习样本</td><td>✅ 喂，学材质 / 光影 / anatomy</td><td>✅ 大量喂</td></tr>
+<tr><td><strong>Stage 2 Quality SFT</strong></td><td>锐度 / 解剖 / 光影 baseline anchor</td><td>✅ 喂，quality reject sampling 的正例</td><td>✅ 喂，材质 / 体积感 / anatomy 正例</td><td>✅ 喂</td></tr>
+<tr><td><strong>Stage 2 Content SFT</strong></td><td>emochi trope 矩阵</td><td>❌ 不喂（trope 不匹配）</td><td>❌ 不喂</td><td>⚠️ 部分喂 — 如果 trope 在覆盖范围内</td></tr>
+<tr><td><strong>Stage 3 Dark Romance LoRA</strong></td><td>cinematic 危险风谱系</td><td>⚠️ <strong>小比例混入</strong>，caption 标 "studio-quality baseline" 不标 "dark romance ref"</td><td>❌ 反锚点剔除（CG 质感污染真人 cinematic 输出）</td><td>⚠️ 看是否 align Dark Romance lighting grammar</td></tr>
+<tr><td><strong>Stage 3 其他 Aesthetics LoRA</strong></td><td>各 sub-spec 谱系</td><td>❌ <strong>反锚点剔除</strong>（污染日韩氧气 / 抖红美颜 dataset）</td><td>❌ 反锚点剔除</td><td>❌ 严格剔除</td></tr>
+<tr><td><strong>Stage 4 RLHF / DPO</strong></td><td>emochi 用户偏好对齐</td><td>❌ 不参与（这阶段全用 emochi 实际生成 + 偏好信号）</td><td>❌ 不参与</td><td>❌ 不参与</td></tr>
+</tbody>
+</table>
+
+<h3 style="margin-top:20px">关键原则（v0.2 升级）</h3>
+<p style="font-size:13.5px">原则 6（新）：<strong>训练 data 是 distribution 的 sample，不是 product spec 的镜像。</strong>"我们 ship 哪些流派" 和 "我们用什么 data 训练" 是两条独立的决策线 — 前者是产品定义，后者是数据工程。混淆这两个会导致两种错误：(a) 数据过窄导致模型欠拟合（只看过 emochi 风格图就训不出 baseline 质感）；(b) 数据过泛导致模型走偏（什么都喂就会 mode collapse 到"中庸"）</p>
 </section>
 
 <section class="principles">
