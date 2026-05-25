@@ -33,9 +33,9 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
 </style></head><body>
 <div class="page">
 <header class="top">
-  <div class="eyebrow">EMOCHI · MODEL DEV PRIORITY + TRAINING ROADMAP · v0.4 · 2026-05-25</div>
+  <div class="eyebrow">EMOCHI · MODEL DEV PRIORITY + TRAINING ROADMAP · v0.5 · 2026-05-25</div>
   <h1>生图模型理想态 · 开发优先级 + 训练思路</h1>
-  <div class="sub">基于 Rian Q/C/A wiki + emochi top100 数据 + keyword verify 综合判断 · v0.4 · 吸收两份北航 deck（强化学习 + 深度生成模型）</div>
+  <div class="sub">基于 Rian Q/C/A wiki + emochi top100 数据 + keyword verify 综合判断 · v0.5 · base 是图像编辑模型 (非 T2I)（强化学习 + 深度生成模型）</div>
 </header>
 
 <div class="callout">
@@ -84,7 +84,7 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
       <p class="why"><strong>WHY</strong>：用户群体是分裂的（喜欢 A 流派的用户觉得 C 假），必须独立 sub-spec model。每个 sub-spec 是独立的训练 artifact</p>
       <table>
         <thead><tr><th>项</th><th>级别</th><th>训练思路</th></tr></thead>
-        <tbody><tr><td><strong>真人 A · 日韩氧气感 ins</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>**独立 full SFT 模型**（不是 LoRA）。数据：5K-20K 张韩国 idol 街拍 + ig 自拍 + 北野武 90s 街头摄影 + NewJeans MV + 反锚点剔除（Sephora editorial / Vogue 封面 / 美式 ig model）</td></tr><tr><td><strong>真人 B · Dark Romance 危险风</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>黑帮电影截图 + GQ Korea + 朴赞郁韩剧黑帮 + Helmut Newton。cinematic 已 baseline (99.7% prompt 含)，重点训电影质感 vs 业余仿冒</td></tr><tr><td><strong>动漫 · 乙女腐漫卡面 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>光与夜之恋 / 时空中的绘旅人 / 恋与制作人 + JJK / 鬼灭暗黑 fanart。配方：削薄下颚 + 凤眼 + 高鼻梁 + 视线锁定观者</td></tr><tr><td><strong>动漫 · 正统二游精致 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>米哈游原神 / 崩铁 + Cygames 公主连结 / 赛马娘 + 鹰角明日方舟。重点：工业化精度 + 商业级品质底线</td></tr><tr><td><strong>动漫 · 日系赛璐璐 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>KyoAni K-On / Hibike + PA Works 白箱 + Bocchi the Rock + 新海诚《你的名字》。线条干净是底线</td></tr><tr><td><strong>动漫 · 网红原创 OC 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>Pixiv / Twitter OC 圈 high-engagement 作品 + 抖音二次元同人 LoRA. 设计感强 / 撞色大胆</td></tr></tbody>
+        <tbody><tr><td><strong>真人 A · 日韩氧气感 ins</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>**独立 full SFT image editing model**（基于 base image editing model 分叉，face encoder 冻结，只训 style decoder）。数据：5K-20K 张韩国 idol 街拍 + ig 自拍 + 北野武 90s 街头摄影 + NewJeans MV + 反锚点剔除（Sephora editorial / Vogue 封面 / 美式 ig model）</td></tr><tr><td><strong>真人 B · Dark Romance 危险风</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>黑帮电影截图 + GQ Korea + 朴赞郁韩剧黑帮 + Helmut Newton。cinematic 已 baseline (99.7% prompt 含)，重点训电影质感 vs 业余仿冒</td></tr><tr><td><strong>动漫 · 乙女腐漫卡面 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>光与夜之恋 / 时空中的绘旅人 / 恋与制作人 + JJK / 鬼灭暗黑 fanart。配方：削薄下颚 + 凤眼 + 高鼻梁 + 视线锁定观者</td></tr><tr><td><strong>动漫 · 正统二游精致 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>米哈游原神 / 崩铁 + Cygames 公主连结 / 赛马娘 + 鹰角明日方舟。重点：工业化精度 + 商业级品质底线</td></tr><tr><td><strong>动漫 · 日系赛璐璐 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>KyoAni K-On / Hibike + PA Works 白箱 + Bocchi the Rock + 新海诚《你的名字》。线条干净是底线</td></tr><tr><td><strong>动漫 · 网红原创 OC 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>Pixiv / Twitter OC 圈 high-engagement 作品 + 抖音二次元同人 LoRA. 设计感强 / 撞色大胆</td></tr></tbody>
       </table>
       <p class="cost"><strong>资源</strong>：高投入。每 sub-spec 需 200-1000 张美术总监级 curation 的 reference + 反锚点剔除工作量。这是 emochi 真正的差异化</p>
     </section>
@@ -124,7 +124,9 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
 
 <h3>Stage 1: Base Pre-train + General SFT（Quality 阶段）</h3>
 <ul>
-<li><strong>Base 选型（v0.4 update）</strong>：优先 <strong>SD3 / Flux 系（Flow Matching）</strong>backbone，因为 Flow Matching 是当前 image gen 范式的最新一代（Stable Diffusion 3+ 已切换）。Diffusion-based 是 fallback。两者数学等价但 Flow Matching 在工程实现上对 noise schedule 更鲁棒</li>
+<li><strong>Base 选型（v0.5 重大修正）</strong>：emochi 用的是<strong>开源图像编辑模型 (image editing model)</strong>，不是 pure T2I。这一点对训练 pipeline 影响深远 — 见原则 9。</li>
+<li>候选开源 image editing model：<strong>FLUX.1 Kontext</strong>（黑森林 2025，当前 SOTA）/ <strong>OmniGen / OmniGen2</strong>（北大智源） / <strong>Step1X-Edit</strong>（字节） / <strong>BAGEL / InstructPix2Pix</strong> 系（早期 baseline）。需 Rian 确认现在 emochi 用的是哪个</li>
+<li>Image editing model 接受 <strong>(reference image + prompt)</strong> 输入，输出 (ref-style-preserved 新场景图)。比 T2I 多一个 ref-image conditioning channel</li>
 <li><strong>不要自己 from scratch</strong>（北航 deck 也明确：站在开源 base 之上）</li>
 <li><strong>General SFT 数据</strong>：emochi 现有真实生图 + caption 重写（重写很重要，让 prompt 描述 align 内容生态）</li>
 <li><strong>Quality gate</strong>：用 1165 张反例库做 reject sampling — 训练集任何样本如果命中 D1-D5 任一维度，直接剔除</li>
@@ -143,6 +145,7 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
 <ul>
 <li><strong>每个 P0 sub-spec 独立 full SFT 模型</strong>：6 个 P0 (真人 2 + 动漫 4) = 6 个独立 model checkpoint</li>
 <li><strong>WHY not LoRA</strong>：emochi sub-spec 之间美学是相反方向（A 轨软光 vs B 轨硬光对立；乙女精致 vs 抖红美颜冲突）。LoRA 在 base 上叠加这种"反向"风格时容易回归到 base 的中庸输出，无法真正"长成"该流派分布。Full SFT 才能让模型完整重塑输出分布</li>
+<li><strong>v0.5 修正：face encoder / IP-Adapter 模块冻结</strong>。SFT 只动 style decoder + cross-attn 部分。否则 sub-spec 训练会破坏 character likeness — 用户 ref image 喂进去出来的角色脸都变了</li>
 <li><strong>每个 SFT 训练数据</strong>：5K-20K 张美术总监级 curation 的样本 + ~2K-5K 反锚点 negative samples（注意：纯 SFT 比 LoRA 需要的数据量大 10-20×）</li>
 <li><strong>关键约束</strong>：dataset 必须严格按谱系筛选 + 反锚点剔除强度比 LoRA 时代要高 — 因为 SFT 学得更深，污染更难恢复</li>
 <li><strong>资源 cost</strong>：6× full SFT (每个 ~base model 的 1-3% step 数)。比 LoRA 方案高 5-10×，但风格强度上限更高、可单独 deploy / A-B test</li>
@@ -188,6 +191,22 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
 <h3 style="margin-top:20px">关键原则（v0.2 升级）</h3>
 <p style="font-size:13.5px">原则 6：<strong>训练 data 是 distribution 的 sample，不是 product spec 的镜像。</strong>"我们 ship 哪些流派" 和 "我们用什么 data 训练" 是两条独立的决策线 — 前者是产品定义，后者是数据工程。混淆这两个会导致两种错误：(a) 数据过窄导致模型欠拟合（只看过 emochi 风格图就训不出 baseline 质感）；(b) 数据过泛导致模型走偏（什么都喂就会 mode collapse 到"中庸"）</p>
 
+<h3 style="margin-top:20px">关键原则（v0.5 新增 — base 是 image editing model 的 implication）</h3>
+<p style="font-size:13.5px">原则 9（新）：<strong>Image editing model 是 emochi 的真正 base，character consistency 不靠模型记忆而靠 ref image IP injection。</strong>这跟纯 T2I 的训练策略有 4 个本质区别：</p>
+<ul style="font-size:13.5px;line-height:1.7">
+<li><strong>训练样本是三元组而不是 pair</strong>：<code>(reference image, prompt, generated image)</code>。每条训练样本必须有匹配的 ref image。emochi 100 测试集 CSV 里 ref_image_path 字段就是这个角色 — duidui 之前要 ref + generated_image 这两列是对的</li>
+<li><strong>character likeness 不靠模型 finetune 记住具体 face</strong>：靠 ref image IP injection 机制（IP-Adapter / image cross-attn / FaceID encoder）。这意味着 sub-spec SFT 训练里 <strong>face IP 模块要冻结</strong>，只训风格部分。冻错地方会让 face likeness 崩</li>
+<li><strong>D1 角色一致性</strong>不是看模型有没有记住角色，是看 ref-image IP injection module 是否被破坏。Quality D1 评估 prompt 要 frame 为"生成图和 ref image 的 face match"，不能 frame 为"角色一致性"</li>
+<li><strong>emochi prompt 模板里 "Follow the reference image style exactly. The character's face must match"</strong> 是直接证据 — 这就是 image editing model 的 SOP 用法</li>
+</ul>
+
+<p style="font-size:13.5px;margin-top:14px">原则 10（新）：<strong>Aesthetics sub-spec model 仍然是 6 个独立 image editing model，但每个的 ref-IP 模块共享（不要重训 face encoder）。</strong></p>
+<ul style="font-size:13.5px;line-height:1.7">
+<li>6 个 P0 sub-spec → 6 个 base image editing model 的 SFT 分叉，但 face encoder / IP-Adapter 部分冻结复用</li>
+<li>训练 cost 不会 6× — 而是 6× (style decoder + cross-attn) ≈ 2-3× full model retraining cost</li>
+<li>这是个好消息：原则 5 里 "纯 SFT cost 上升 5-10×" 在 image editing model setting 下，实际更接近 2-3×</li>
+</ul>
+
 <h3 style="margin-top:20px">关键原则（v0.4 新增 — 来自北航深度生成模型 deck）</h3>
 <p style="font-size:13.5px">原则 7（新）：<strong>Diffusion model is secretly a zero-shot classifier。</strong>训出的 sub-spec model 本身就是个 "这张图是不是 X 流派" 的 classifier — 利用 ELBO + Bayes 公式可以直接 zero-shot 分类（北航 deck "关键论文：生成构筑理解"段）。这给我们三个 emochi-specific 红利：</p>
 <ul style="font-size:13.5px;line-height:1.7">
@@ -226,7 +245,9 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
 <li>每个 sub-spec 200-1000 张 reference 的具体数字是估算，要看实际美术总监能 curate 多少</li>
 <li>**v0.3 确认**：用纯 SFT 不用 LoRA（Rian 5/25 拍板）— 6 个 P0 sub-spec = 6 个 full SFT checkpoint</li>
 <li>**v0.4 吸收**：两份北航 deck（张瑞星老师整理）—— RL 一份讲 GRPO/DAPO/GSPO（LLM 端），深度生成模型一份讲 AR/VAE/GAN/Diffusion/Flow Matching。已把 GRPO 思路（group-relative 省 value model）+ DAPO asymmetric clip（防 entropy collapse）+ Diffusion-as-classifier（自动反锚点 + benchmark anchor）写进 Stage 4 + 原则 7-8</li>
-<li>**v0.4 待 ablation**：Diffusion-DPO vs DDPO vs ReFL，三个 image-RL 算法选型还没 lock。北航 deck 主要讲 LLM-RL 不直接给 image-RL 答案 —— 需要参考 Pickapic / OpenLeRobot / Black 等 image-DPO 工作做 ablation</li>
+<li>**v0.4 待 ablation**：Diffusion-DPO vs DDPO vs ReFL，三个 image-RL 算法选型还没 lock</li>
+<li>**v0.5 重大修正 (Rian 5/25)**：emochi base 是<strong>开源图像编辑模型</strong>（不是 pure T2I）。这影响 Stage 1 base 选型 + Stage 3 SFT 策略（face encoder 冻结）+ training cost 估算（从 5-10× 降到 2-3× full model retraining）。原则 9-10 详写</li>
+<li>**v0.5 待确认**：Rian 说的"开源图像编辑模型"具体是哪个？候选：FLUX.1 Kontext / OmniGen / OmniGen2 / Step1X-Edit / BAGEL。等确认后 Stage 1 backbone 部分可以再 sharpen</li>
 </ul>
 </div>
 
