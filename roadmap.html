@@ -33,9 +33,9 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
 </style></head><body>
 <div class="page">
 <header class="top">
-  <div class="eyebrow">EMOCHI · MODEL DEV PRIORITY + TRAINING ROADMAP · v0.1 · 2026-05-25</div>
+  <div class="eyebrow">EMOCHI · MODEL DEV PRIORITY + TRAINING ROADMAP · v0.3 · 2026-05-25</div>
   <h1>生图模型理想态 · 开发优先级 + 训练思路</h1>
-  <div class="sub">基于 Rian Q/C/A wiki + emochi top100 数据 + keyword verify 综合判断 · v0.1 待 Rian + 训练团队 review</div>
+  <div class="sub">基于 Rian Q/C/A wiki + emochi top100 数据 + keyword verify 综合判断 · v0.3 · 纯 SFT + RLHF/DPO 不用 LoRA</div>
 </header>
 
 <div class="callout">
@@ -84,7 +84,7 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
       <p class="why"><strong>WHY</strong>：用户群体是分裂的（喜欢 A 流派的用户觉得 C 假），必须独立 sub-spec model。每个 sub-spec 是独立的训练 artifact</p>
       <table>
         <thead><tr><th>项</th><th>级别</th><th>训练思路</th></tr></thead>
-        <tbody><tr><td><strong>真人 A · 日韩氧气感 ins</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>韩国 idol 街拍 + ig 自拍 + 北野武 90s 街头摄影 + NewJeans MV。反锚点剔除：Sephora editorial / Vogue 封面 / 美式 ig model</td></tr><tr><td><strong>真人 B · Dark Romance 危险风</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>黑帮电影截图 + GQ Korea + 朴赞郁韩剧黑帮 + Helmut Newton。cinematic 已 baseline (99.7% prompt 含)，重点训电影质感 vs 业余仿冒</td></tr><tr><td><strong>动漫 · 乙女腐漫卡面 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>光与夜之恋 / 时空中的绘旅人 / 恋与制作人 + JJK / 鬼灭暗黑 fanart。配方：削薄下颚 + 凤眼 + 高鼻梁 + 视线锁定观者</td></tr><tr><td><strong>动漫 · 正统二游精致 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>米哈游原神 / 崩铁 + Cygames 公主连结 / 赛马娘 + 鹰角明日方舟。重点：工业化精度 + 商业级品质底线</td></tr><tr><td><strong>动漫 · 日系赛璐璐 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>KyoAni K-On / Hibike + PA Works 白箱 + Bocchi the Rock + 新海诚《你的名字》。线条干净是底线</td></tr><tr><td><strong>动漫 · 网红原创 OC 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>Pixiv / Twitter OC 圈 high-engagement 作品 + 抖音二次元同人 LoRA. 设计感强 / 撞色大胆</td></tr></tbody>
+        <tbody><tr><td><strong>真人 A · 日韩氧气感 ins</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>**独立 full SFT 模型**（不是 LoRA）。数据：5K-20K 张韩国 idol 街拍 + ig 自拍 + 北野武 90s 街头摄影 + NewJeans MV + 反锚点剔除（Sephora editorial / Vogue 封面 / 美式 ig model）</td></tr><tr><td><strong>真人 B · Dark Romance 危险风</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>黑帮电影截图 + GQ Korea + 朴赞郁韩剧黑帮 + Helmut Newton。cinematic 已 baseline (99.7% prompt 含)，重点训电影质感 vs 业余仿冒</td></tr><tr><td><strong>动漫 · 乙女腐漫卡面 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>光与夜之恋 / 时空中的绘旅人 / 恋与制作人 + JJK / 鬼灭暗黑 fanart。配方：削薄下颚 + 凤眼 + 高鼻梁 + 视线锁定观者</td></tr><tr><td><strong>动漫 · 正统二游精致 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>米哈游原神 / 崩铁 + Cygames 公主连结 / 赛马娘 + 鹰角明日方舟。重点：工业化精度 + 商业级品质底线</td></tr><tr><td><strong>动漫 · 日系赛璐璐 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>KyoAni K-On / Hibike + PA Works 白箱 + Bocchi the Rock + 新海诚《你的名字》。线条干净是底线</td></tr><tr><td><strong>动漫 · 网红原创 OC 2D</strong></td><td><span class="lvl lvl-p0">P0</span></td><td>Pixiv / Twitter OC 圈 high-engagement 作品 + 抖音二次元同人 LoRA. 设计感强 / 撞色大胆</td></tr></tbody>
       </table>
       <p class="cost"><strong>资源</strong>：高投入。每 sub-spec 需 200-1000 张美术总监级 curation 的 reference + 反锚点剔除工作量。这是 emochi 真正的差异化</p>
     </section>
@@ -114,7 +114,7 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
         <thead><tr><th>项</th><th>级别</th><th>训练思路</th></tr></thead>
         <tbody><tr><td><strong>动漫 · 美漫 2D (Hazbin/Arcane)</strong></td><td><span class="lvl lvl-p2">P2</span></td><td>北美亚文化粉丝粘性高但 emochi 海外用户群里占比小。可用通用 anime base + 后期 LoRA</td></tr><tr><td><strong>动漫 · 游戏厚涂 2D（西式概念画）</strong></td><td><span class="lvl lvl-p2">P2</span></td><td>英雄联盟 / Dota2 玩家群 niche</td></tr><tr><td><strong>动漫 · 游戏 2.5D (Spider-Verse)</strong></td><td><span class="lvl lvl-p2">P2</span></td><td>混合媒材 niche，emochi 用户极少</td></tr><tr><td><strong>&quot;其他&quot; 兜底（亚文化 dreamcore/vaporwave）</strong></td><td><span class="lvl lvl-p2">P2</span></td><td>不投训练，作为能力测试用</td></tr><tr><td><strong>真人高清艺术摄影</strong></td><td><span class="lvl lvl-p0-filler">P0-filler</span></td><td>**修正 v0.2**：不作为产品端流派 (用户没需求 confirmed)，但作为 **Stage 1-2 base pretrain + Quality SFT 阶段的训练填充物** 大量喂入 — 网上最易获取的高质感真人样本，作为 quality anchor。**在 Aesthetics Dark Romance LoRA 阶段可小比例混入 (caption 标 &quot;studio-quality baseline&quot; 不标 &quot;dark romance ref&quot;)**。在其他 sub-spec LoRA 阶段反锚点剔除</td></tr><tr><td><strong>真人 3A 游戏建模</strong></td><td><span class="lvl lvl-p0-filler">P0-filler</span></td><td>同上逻辑：不作为产品流派，作为 Quality 训练填充物可以喂 (材质 / 光影 / anatomy 这些底层信号高质量) — 但要 caption 严格标注 &quot;non-photo 3D render&quot;，避免污染真人 cinematic 输出</td></tr></tbody>
       </table>
-      <p class="cost"><strong>资源</strong>：P2 流派不投 sub-spec LoRA。但 P0-filler 类（艺术摄影 / 3A 建模）在 base pretrain + Quality SFT 阶段是**重要 data 来源** — 因为这是网上最易拿到的高质感真人样本。这是 Rian 5/25 push back 后修正的判断</p>
+      <p class="cost"><strong>资源</strong>：P2 流派不训独立 full SFT 模型（cost 过高）。但 P0-filler 类（艺术摄影 / 3A 建模）在 base pretrain + Quality SFT 阶段是**重要 data 来源** — 因为这是网上最易拿到的高质感真人样本。这是 Rian 5/25 push back 后修正的判断</p>
     </section>
 
 <section class="training">
@@ -138,11 +138,13 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
 <li><strong>验收标准</strong>：能从 prompt 生成对应 trope/scene/angle 的图，不是 default "正面中景"</li>
 </ul>
 
-<h3>Stage 3: Aesthetics Sub-spec LoRA</h3>
+<h3>Stage 3: Aesthetics Sub-spec Full SFT（v0.3：纯 SFT，不用 LoRA）</h3>
 <ul>
-<li><strong>每个 P0 sub-spec 独立 LoRA</strong>：6 个 P0 (真人 2 + 动漫 4) = 6 个 LoRA artifact</li>
-<li><strong>每个 LoRA 训练数据</strong>：200-1000 张美术总监级 curation 的 reference + ~500 张反锚点 negative samples</li>
-<li><strong>关键约束</strong>：dataset 必须严格按谱系筛选，不能混 sub-spec。混了会 mode collapse</li>
+<li><strong>每个 P0 sub-spec 独立 full SFT 模型</strong>：6 个 P0 (真人 2 + 动漫 4) = 6 个独立 model checkpoint</li>
+<li><strong>WHY not LoRA</strong>：emochi sub-spec 之间美学是相反方向（A 轨软光 vs B 轨硬光对立；乙女精致 vs 抖红美颜冲突）。LoRA 在 base 上叠加这种"反向"风格时容易回归到 base 的中庸输出，无法真正"长成"该流派分布。Full SFT 才能让模型完整重塑输出分布</li>
+<li><strong>每个 SFT 训练数据</strong>：5K-20K 张美术总监级 curation 的样本 + ~2K-5K 反锚点 negative samples（注意：纯 SFT 比 LoRA 需要的数据量大 10-20×）</li>
+<li><strong>关键约束</strong>：dataset 必须严格按谱系筛选 + 反锚点剔除强度比 LoRA 时代要高 — 因为 SFT 学得更深，污染更难恢复</li>
+<li><strong>资源 cost</strong>：6× full SFT (每个 ~base model 的 1-3% step 数)。比 LoRA 方案高 5-10×，但风格强度上限更高、可单独 deploy / A-B test</li>
 <li><strong>验收标准</strong>：sub-spec 用户群盲选（不能用 VLM 评，要找真实的 K-pop fan / 乙女游戏粉丝盲测）</li>
 </ul>
 
@@ -210,7 +212,7 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
 <li>"两个北航文章"我还没读到 — 训练思路是基于通用 T2I post-training 公认范式 (Flux / Stable Diffusion 3 / DiT 系) 写的，文章可能会让我修正某些技术选型（如 backbone / DPO vs RLAIF / LoRA rank 之类）</li>
 <li>Stage 4 RLHF preference signal 怎么从 emochi 埋点收集，需要和 PM + 后端确认 (chat 深度 / 留存 / profile lift 哪个作为 reward 最准)</li>
 <li>每个 sub-spec 200-1000 张 reference 的具体数字是估算，要看实际美术总监能 curate 多少</li>
-<li>Phase 3 LoRA 是否真的够 (vs full fine-tune)，要 ablation 验证 — 风格强度需求高的话可能要 full fine-tune</li>
+<li>**v0.3 确认：用纯 SFT 不用 LoRA**（Rian 5/25 拍板）— 6 个 P0 sub-spec = 6 个 full SFT checkpoint。资源 cost 上升 5-10×但风格强度上限明显更高，符合 emochi sub-spec 之间美学冲突的需求</li>
 </ul>
 </div>
 
