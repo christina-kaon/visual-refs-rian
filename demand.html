@@ -1,0 +1,851 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Emochi Q/C/A 用户需求大盘 · 子维度优先级数据</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box}body{margin:0;font-family:'Inter','Noto Sans SC',sans-serif;background:#faf9f7;color:#1f1d1a;font-size:13.5px;line-height:1.6}
+.page{max-width:1140px;margin:0 auto;padding:48px 32px}
+header.top{margin-bottom:24px;border-bottom:1px solid #e8e4dd;padding-bottom:20px}
+.eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#c96442;font-weight:600}
+h1{margin:8px 0;font-size:26px;font-weight:700}
+.sub{margin:4px 0 0;font-size:14px;color:#6b6862}
+.baseline{background:#f6ece6;border-left:3px solid #c96442;padding:14px 20px;border-radius:0 8px 8px 0;margin:20px 0;font-size:13px}
+.caveat{background:#fdf6f2;border-left:3px solid #c96442;padding:18px 22px;border-radius:0 8px 8px 0;margin:24px 0;font-size:13px;line-height:1.7}
+.caveat h3{margin:0 0 10px;color:#c96442;font-size:15px}
+.caveat ol,.caveat ul{padding-left:22px;margin:6px 0}
+section{margin-bottom:32px}
+section.layer{background:#fff;border:1px solid #e8e4dd;border-radius:14px;padding:22px 26px}
+section.layer h2{margin:0 0 12px;font-size:20px;color:#1f1d1a;border-bottom:1px solid #f0ebe2;padding-bottom:8px}
+section.layer .layerdesc{margin:8px 0 14px;font-size:13px;color:#6b6862;line-height:1.7}
+.dim{background:#fafafa;border:1px solid #ece7df;border-radius:8px;padding:12px 16px;margin:12px 0}
+.dim summary{cursor:pointer;font-weight:600;list-style:none;padding:4px 0}
+.dim summary::-webkit-details-marker{display:none}
+.dn{color:#c96442;font-size:14px}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12.5px}
+th,td{padding:7px 10px;border-bottom:1px solid #e8e4dd;text-align:left;vertical-align:middle}
+th{background:#f6ece6;color:#c96442;font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+td.num{font-family:'SF Mono',Menlo,monospace;text-align:right;font-size:12px}
+.pri{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;color:#fff;letter-spacing:.04em;margin-right:4px}
+section.ctx{background:#fff;border:1px solid #e8e4dd;border-radius:14px;padding:22px 26px}
+section.ctx h2{margin:0 0 12px;font-size:18px;color:#c96442}
+.trope-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.trope-col h3{margin:0 0 8px;font-size:14px;color:#1f1d1a}
+.trope-col ul{padding-left:20px;margin:0}
+.trope-col li{margin:5px 0}
+.medium-section{margin-bottom:32px}
+.medium-section h2{margin:0 0 14px;font-size:22px;padding-bottom:8px;border-bottom:2px solid #1f1d1a}
+footer{margin-top:48px;padding-top:20px;border-top:1px solid #e8e4dd;text-align:center;font-size:12px;color:#94918a}
+footer a{color:#c96442;text-decoration:none}
+</style></head><body>
+<div class="page">
+<header class="top">
+<div class="eyebrow">EMOCHI · Q/C/A USER DEMAND MATRIX · 2026-05-25</div>
+<h1>Q/C/A 三层每个子维度的用户需求大盘</h1>
+<div class="sub">基于 80,000 prompt sample (5/15-5/16) keyword 占比 + top100 bot trope 分布 · 给迭代优先级提供数据 anchor</div>
+</header>
+
+<div class="baseline">
+<strong>样本基线</strong>：从 <code>rds_pg.prompt_image_history</code> 拉 2 天 80,000 个 SUCCESS chat-scenario 生图样本（8 个 6h 窗口避 PG recovery conflict）。Anime <strong>69.8%</strong> (55,808) / Realistic <strong>30.2%</strong> (24,141)。
+<br/><br/>
+<strong>子维度占比统计方法</strong>：对每个子维度的 keyword set 取 OR 匹配，分别在 anime / real sub-population 内统计占比。<strong>"信号"分级</strong>：≥5% 强 / 1-5% 中 / 0.1-1% 弱 / 0% 无 prompt-level 信号（不等于无 demand，见下 caveat）。
+</div>
+
+<div class="caveat">
+<h3>数据 caveat（很重要）</h3>
+<ol>
+<li><strong>emochi prompt 是经过 prompt rewriting / wrapping 的</strong>，不是用户原始描述。"cinematic" 99.72% 真人 prompt 含 = emochi 后端模板自动注入。"wide shot" 44% real 也类似。<strong>所以 keyword 占比不等于用户主动需求强度</strong></li>
+<li><strong>Aesthetics 流派关键词大多 ≈ 0%</strong>（kawaii / y2k / cel shading / genshin / spider-verse 等）— 这是因为这些流派是<strong>视觉特征</strong>而非 prompt 关键词。用户不会在剧情 prompt 里写"genshin style"，但这不代表他们不喜欢这种风格</li>
+<li><strong>Bot trope 分布更准</strong>：top100 bot 的 trope 分布（marriage 占 anime 15% / OC Real 占 real 52%）能间接反映用户对 Aesthetics 流派的潜在 demand</li>
+<li><strong>这份矩阵的正确用法</strong>：
+<ul><li>Content 层信号 ≥ 1% = 明显用户主动表达 → 必须覆盖</li>
+<li>Aesthetics 层用 top100 bot trope + 已知 cross-validation（如 BTS 9 个进 real top100 → K-pop 美学有真实 demand）</li>
+<li>0% keyword 不等于 0 需求 — 反过来需要"用户主动用 prompt 写"作为正向 evidence，而不是反向证伪</li></ul></li>
+</ol>
+</div>
+
+
+<section class="layer">
+<h2>Quality 层（5 维度）</h2>
+<p class="layerdesc">⚠️ Quality 维度 prompt-level keyword 反映不出"失败率" — 因为用户不会在 prompt 里写"请不要糊"。Quality 优先级靠 perceptual heuristic 排：解剖学崩 > 糊 > 语义错 > AI 感 > 风格撕裂。<strong>5 个都是 P0 / P1 — 不要降级，是 gate condition</strong></p>
+<table>
+<thead><tr><th>维度</th><th>优先级</th><th>WHY</th><th>训练方法</th></tr></thead>
+<tbody><tr><td><strong>D1 整体糊</strong></td><td><span class="pri" style="background:#a8412a">P0</span></td><td>基础门槛 — 不过 reject 训练集</td><td>直接 reject sampling</td></tr><tr><td><strong>D2 恐怖谷 / 肢体扭曲</strong></td><td><span class="pri" style="background:#a8412a">P0</span></td><td>基础门槛 — 真人比动漫敏感度更高</td><td>face anatomy 专项数据 + 反例 dataset</td></tr><tr><td><strong>D3 语义崩坏</strong></td><td><span class="pri" style="background:#a8412a">P0</span></td><td>基础门槛 — 多人交互 / 物理一致性</td><td>multi-person + holding interaction 专项</td></tr><tr><td><strong>D4 塑料 AI 感</strong></td><td><span class="pri" style="background:#9a6a30">P1</span></td><td>主观感受 — 真人皮肤纹理 / 动漫线条质感</td><td>皮肤/线条质感 LoRA + 磨皮反例剔除</td></tr><tr><td><strong>D5 风格撕裂</strong></td><td><span class="pri" style="background:#9a6a30">P1</span></td><td>主观感受 — character + scene 统一光照</td><td>端到端 character-scene 训练</td></tr></tbody>
+</table>
+</section>
+
+
+<section class="medium-section">
+<h2>真人 Content 维度 · 子维度需求矩阵</h2>
+<section class="layer"><details open class="dim"><summary><span class="dn">真人/Content/镜头语言</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>wide_shot</td>
+<td><span class="pri" style="background:#a8412a">P0</span> 强信号</td>
+<td class="num">13.40%</td>
+<td class="num">0.01%</td>
+<td class="num">44.37%</td>
+<td><span style='color:#5a8a4f'>↑ real 3095.4× of anime</span></td>
+</tr><tr>
+<td>low_angle (压迫感)</td>
+<td><span class="pri" style="background:#a8412a">P0</span> 强信号</td>
+<td class="num">7.51%</td>
+<td class="num">9.74%</td>
+<td class="num">2.39%</td>
+<td><span style='color:#c96442'>↑ anime 4.1× of real</span></td>
+</tr><tr>
+<td>high_angle (脆弱感)</td>
+<td><span class="pri" style="background:#a8412a">P0</span> 强信号</td>
+<td class="num">5.68%</td>
+<td class="num">6.35%</td>
+<td class="num">4.15%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>close_up</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">3.70%</td>
+<td class="num">0.25%</td>
+<td class="num">11.71%</td>
+<td><span style='color:#5a8a4f'>↑ real 47.7× of anime</span></td>
+</tr><tr>
+<td>over_shoulder</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">3.29%</td>
+<td class="num">3.45%</td>
+<td class="num">2.91%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>mirror_selfie</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.01%</td>
+<td class="num">0.01%</td>
+<td class="num">0.02%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr></tbody></table>
+</details><details open class="dim"><summary><span class="dn">真人/Content/构图叙事</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>foreground_blur (前景遮挡)</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">3.72%</td>
+<td class="num">3.22%</td>
+<td class="num">4.87%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>negative_space (留白)</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">2.99%</td>
+<td class="num">1.51%</td>
+<td class="num">6.40%</td>
+<td><span style='color:#5a8a4f'>↑ real 4.2× of anime</span></td>
+</tr><tr>
+<td>silhouette (剪影)</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">1.73%</td>
+<td class="num">0.60%</td>
+<td class="num">4.35%</td>
+<td><span style='color:#5a8a4f'>↑ real 7.3× of anime</span></td>
+</tr><tr>
+<td>diagonal (对角线)</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.06%</td>
+<td class="num">0.04%</td>
+<td class="num">0.11%</td>
+<td><span style='color:#5a8a4f'>↑ real 2.7× of anime</span></td>
+</tr></tbody></table>
+</details><details open class="dim"><summary><span class="dn">真人/Content/动态与互动</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>embrace (拥抱)</td>
+<td><span class="pri" style="background:#a8412a">P0</span> 强信号</td>
+<td class="num">10.32%</td>
+<td class="num">12.16%</td>
+<td class="num">6.10%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>walking (普通走)</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">1.89%</td>
+<td class="num">2.36%</td>
+<td class="num">0.79%</td>
+<td><span style='color:#c96442'>↑ anime 3.0× of real</span></td>
+</tr><tr>
+<td>kissing (亲吻)</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">1.80%</td>
+<td class="num">2.51%</td>
+<td class="num">0.17%</td>
+<td><span style='color:#c96442'>↑ anime 15.1× of real</span></td>
+</tr><tr>
+<td>wall_slam (壁咚)</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.64%</td>
+<td class="num">0.63%</td>
+<td class="num">0.66%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>forehead_touch (额头相抵)</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.14%</td>
+<td class="num">0.20%</td>
+<td class="num">0.01%</td>
+<td><span style='color:#c96442'>↑ anime 16.1× of real</span></td>
+</tr><tr>
+<td>princess_carry (公主抱)</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.09%</td>
+<td class="num">0.12%</td>
+<td class="num">0.02%</td>
+<td><span style='color:#c96442'>↑ anime 7.5× of real</span></td>
+</tr><tr>
+<td>lap_pillow (膝枕)</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#c96442'>↑ anime 2.4× of real</span></td>
+</tr><tr>
+<td>wrist_grab (抓手腕)</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr></tbody></table>
+</details><details open class="dim"><summary><span class="dn">真人/Content/场景多样性</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>bedroom (卧室)</td>
+<td><span class="pri" style="background:#a8412a">P0</span> 强信号</td>
+<td class="num">31.59%</td>
+<td class="num">31.06%</td>
+<td class="num">32.87%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>rain_night (雨夜)</td>
+<td><span class="pri" style="background:#a8412a">P0</span> 强信号</td>
+<td class="num">6.30%</td>
+<td class="num">4.22%</td>
+<td class="num">11.13%</td>
+<td><span style='color:#5a8a4f'>↑ real 2.6× of anime</span></td>
+</tr><tr>
+<td>bathroom (浴室)</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">3.94%</td>
+<td class="num">3.72%</td>
+<td class="num">4.45%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>classroom (教室)</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">2.57%</td>
+<td class="num">2.52%</td>
+<td class="num">2.70%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>neon (霓虹)</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">1.99%</td>
+<td class="num">0.78%</td>
+<td class="num">4.80%</td>
+<td><span style='color:#5a8a4f'>↑ real 6.2× of anime</span></td>
+</tr><tr>
+<td>rooftop (顶层公寓)</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">1.54%</td>
+<td class="num">1.43%</td>
+<td class="num">1.81%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>cafe (咖啡店)</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.74%</td>
+<td class="num">0.73%</td>
+<td class="num">0.75%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>gym (健身房)</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.70%</td>
+<td class="num">0.65%</td>
+<td class="num">0.82%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>bar (酒吧)</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.56%</td>
+<td class="num">0.46%</td>
+<td class="num">0.78%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>subway_station (地铁站)</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.32%</td>
+<td class="num">0.20%</td>
+<td class="num">0.59%</td>
+<td><span style='color:#5a8a4f'>↑ real 3.0× of anime</span></td>
+</tr><tr>
+<td>church (教堂)</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.26%</td>
+<td class="num">0.28%</td>
+<td class="num">0.19%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr></tbody></table>
+</details></section>
+</section>
+
+<section class="medium-section">
+<h2>动漫 Content 维度 · 子维度需求矩阵</h2>
+<section class="layer"><details open class="dim"><summary><span class="dn">动漫/Content/面部情绪</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>smirk_arrogant (挑衅笑)</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">4.93%</td>
+<td class="num">4.59%</td>
+<td class="num">5.72%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>blush (脸红)</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">2.94%</td>
+<td class="num">3.61%</td>
+<td class="num">1.40%</td>
+<td><span style='color:#c96442'>↑ anime 2.6× of real</span></td>
+</tr><tr>
+<td>tears (含泪)</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">2.25%</td>
+<td class="num">2.04%</td>
+<td class="num">2.74%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>half_lidded (半垂眼帘)</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.16%</td>
+<td class="num">0.13%</td>
+<td class="num">0.23%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>yandere (病娇眼)</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.08%</td>
+<td class="num">0.10%</td>
+<td class="num">0.02%</td>
+<td><span style='color:#c96442'>↑ anime 4.0× of real</span></td>
+</tr><tr>
+<td>pupil_constrict (瞳孔缩)</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr></tbody></table>
+</details><details open class="dim"><summary><span class="dn">动漫/Content/氛围光影</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>fire_glow (火光)</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.61%</td>
+<td class="num">0.51%</td>
+<td class="num">0.85%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>rim_light (轮廓光)</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.27%</td>
+<td class="num">0.01%</td>
+<td class="num">0.89%</td>
+<td><span style='color:#5a8a4f'>↑ real 89.5× of anime</span></td>
+</tr><tr>
+<td>particle_light (粒子光)</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.19%</td>
+<td class="num">0.23%</td>
+<td class="num">0.10%</td>
+<td><span style='color:#c96442'>↑ anime 2.4× of real</span></td>
+</tr><tr>
+<td>starlight (星光)</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.14%</td>
+<td class="num">0.19%</td>
+<td class="num">0.05%</td>
+<td><span style='color:#c96442'>↑ anime 4.1× of real</span></td>
+</tr><tr>
+<td>cherry_blossom (樱花)</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.12%</td>
+<td class="num">0.15%</td>
+<td class="num">0.05%</td>
+<td><span style='color:#c96442'>↑ anime 3.1× of real</span></td>
+</tr><tr>
+<td>magic_circle (魔法阵)</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.03%</td>
+<td class="num">0.03%</td>
+<td class="num">0.01%</td>
+<td><span style='color:#c96442'>↑ anime 2.5× of real</span></td>
+</tr></tbody></table>
+</details><details open class="dim"><summary><span class="dn">动漫/Content/互动动势</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>magic_cast (蓄力)</td>
+<td><span class="pri" style="background:#a8412a">P0</span> 强信号</td>
+<td class="num">15.71%</td>
+<td class="num">10.12%</td>
+<td class="num">28.66%</td>
+<td><span style='color:#5a8a4f'>↑ real 2.8× of anime</span></td>
+</tr><tr>
+<td>kneeling (半跪)</td>
+<td><span class="pri" style="background:#a8412a">P0</span> 强信号</td>
+<td class="num">5.49%</td>
+<td class="num">6.34%</td>
+<td class="num">3.54%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>flying (飞行)</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">1.73%</td>
+<td class="num">1.71%</td>
+<td class="num">1.78%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>sword_fight (拔剑)</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">1.29%</td>
+<td class="num">1.50%</td>
+<td class="num">0.80%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>chibi (Q 版)</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.01%</td>
+<td class="num">0.01%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#c96442'>仅 anime</span></td>
+</tr></tbody></table>
+</details></section>
+</section>
+
+<section class="medium-section">
+<h2>真人 Aesthetics 流派 · 子维度需求矩阵</h2>
+<section class="layer"><details open class="dim"><summary><span class="dn">真人/Aesthetics/A 日韩氧气感</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>casual_outfit (休闲穿搭)</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">4.29%</td>
+<td class="num">2.52%</td>
+<td class="num">8.41%</td>
+<td><span style='color:#5a8a4f'>↑ real 3.3× of anime</span></td>
+</tr><tr>
+<td>natural_light (自然光)</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.70%</td>
+<td class="num">0.69%</td>
+<td class="num">0.72%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>k_idol_vibe (K-pop)</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.03%</td>
+<td class="num">0.01%</td>
+<td class="num">0.07%</td>
+<td><span style='color:#5a8a4f'>↑ real 7.0× of anime</span></td>
+</tr><tr>
+<td>phone_selfie (手机自拍)</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#5a8a4f'>仅 real</span></td>
+</tr></tbody></table>
+</details><details open class="dim"><summary><span class="dn">真人/Aesthetics/B Dark Romance 危险风</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>cinematic_aesthetic</td>
+<td><span class="pri" style="background:#a8412a">P0</span> 强信号</td>
+<td class="num">30.10%</td>
+<td class="num">0.01%</td>
+<td class="num">99.72%</td>
+<td><span style='color:#5a8a4f'>↑ real 9972.2× of anime</span></td>
+</tr><tr>
+<td>possessive_obsessed</td>
+<td><span class="pri" style="background:#a8412a">P0</span> 强信号</td>
+<td class="num">10.75%</td>
+<td class="num">8.71%</td>
+<td class="num">15.48%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>ceo_billionaire</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.83%</td>
+<td class="num">0.54%</td>
+<td class="num">1.48%</td>
+<td><span style='color:#5a8a4f'>↑ real 2.7× of anime</span></td>
+</tr><tr>
+<td>mafia</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.35%</td>
+<td class="num">0.46%</td>
+<td class="num">0.11%</td>
+<td><span style='color:#c96442'>↑ anime 4.1× of real</span></td>
+</tr><tr>
+<td>film_noir</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.15%</td>
+<td class="num">0.03%</td>
+<td class="num">0.42%</td>
+<td><span style='color:#5a8a4f'>↑ real 15.7× of anime</span></td>
+</tr><tr>
+<td>werewolf_alpha</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.14%</td>
+<td class="num">0.19%</td>
+<td class="num">0.04%</td>
+<td><span style='color:#c96442'>↑ anime 4.6× of real</span></td>
+</tr></tbody></table>
+</details><details open class="dim"><summary><span class="dn">真人/Aesthetics/C 抖红美颜风</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>v_line_face</td>
+<td><span class="pri" style="background:#9a6a30">P1</span> 中信号</td>
+<td class="num">3.19%</td>
+<td class="num">0.94%</td>
+<td class="num">8.39%</td>
+<td><span style='color:#5a8a4f'>↑ real 8.9× of anime</span></td>
+</tr><tr>
+<td>big_eyes (大眼)</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.14%</td>
+<td class="num">0.15%</td>
+<td class="num">0.09%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>y2k</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.01%</td>
+<td class="num">0.01%</td>
+<td class="num">0.02%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>kawaii</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.01%</td>
+<td class="num">0.01%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#c96442'>仅 anime</span></td>
+</tr><tr>
+<td>cottage_core</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#5a8a4f'>仅 real</span></td>
+</tr></tbody></table>
+</details><details open class="dim"><summary><span class="dn">真人/Aesthetics/高清艺术摄影</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>magazine_cover</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.16%</td>
+<td class="num">0.05%</td>
+<td class="num">0.41%</td>
+<td><span style='color:#5a8a4f'>↑ real 7.7× of anime</span></td>
+</tr><tr>
+<td>editorial</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.14%</td>
+<td class="num">0.00%</td>
+<td class="num">0.48%</td>
+<td><span style='color:#5a8a4f'>仅 real</span></td>
+</tr><tr>
+<td>studio_lighting</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.12%</td>
+<td class="num">0.14%</td>
+<td class="num">0.08%</td>
+<td><span style='color:#888'>~平衡</span></td>
+</tr><tr>
+<td>softbox</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.07%</td>
+<td class="num">0.00%</td>
+<td class="num">0.22%</td>
+<td><span style='color:#5a8a4f'>仅 real</span></td>
+</tr><tr>
+<td>rembrandt</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr></tbody></table>
+</details><details open class="dim"><summary><span class="dn">真人/Aesthetics/3A 游戏建模</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>octane_arnold</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.01%</td>
+<td class="num">0.00%</td>
+<td class="num">0.02%</td>
+<td><span style='color:#5a8a4f'>仅 real</span></td>
+</tr><tr>
+<td>3d_render</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr><tr>
+<td>unreal_engine</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr><tr>
+<td>concept_art</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr></tbody></table>
+</details></section>
+</section>
+
+<section class="medium-section">
+<h2>动漫 Aesthetics 流派 · 子维度需求矩阵</h2>
+<section class="layer"><details open class="dim"><summary><span class="dn">动漫/Aesthetics/网红原创 OC</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>pastel_palette</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.53%</td>
+<td class="num">0.40%</td>
+<td class="num">0.84%</td>
+<td><span style='color:#5a8a4f'>↑ real 2.1× of anime</span></td>
+</tr><tr>
+<td>oc_original</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr><tr>
+<td>y2k_anime</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr></tbody></table>
+</details><details open class="dim"><summary><span class="dn">动漫/Aesthetics/乙女腐漫卡面</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>gentleman_butler</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.08%</td>
+<td class="num">0.09%</td>
+<td class="num">0.03%</td>
+<td><span style='color:#c96442'>↑ anime 2.9× of real</span></td>
+</tr><tr>
+<td>bishounen (美男子)</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.01%</td>
+<td class="num">0.02%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#c96442'>仅 anime</span></td>
+</tr><tr>
+<td>otome_game</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#5a8a4f'>仅 real</span></td>
+</tr></tbody></table>
+</details><details open class="dim"><summary><span class="dn">动漫/Aesthetics/正统二游精致</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>genshin_impact</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#c96442'>仅 anime</span></td>
+</tr><tr>
+<td>honkai_starrail</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr><tr>
+<td>gacha_splash</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr></tbody></table>
+</details><details open class="dim"><summary><span class="dn">动漫/Aesthetics/日系赛璐璐</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>anime_style</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#c96442'>↑ anime 2.4× of real</span></td>
+</tr><tr>
+<td>shounen</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#c96442'>仅 anime</span></td>
+</tr><tr>
+<td>cel_shading</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr><tr>
+<td>manga_panel</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr></tbody></table>
+</details><details open class="dim"><summary><span class="dn">动漫/Aesthetics/美漫 2D</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>hazbin_helluva</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.05%</td>
+<td class="num">0.07%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#c96442'>↑ anime 16.0× of real</span></td>
+</tr><tr>
+<td>western_animation</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr><tr>
+<td>cartoon_style</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr></tbody></table>
+</details><details open class="dim"><summary><span class="dn">动漫/Aesthetics/游戏原画厚涂</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>fantasy_armor</td>
+<td><span class="pri" style="background:#5a6190">P2</span> 弱信号</td>
+<td class="num">0.14%</td>
+<td class="num">0.17%</td>
+<td class="num">0.05%</td>
+<td><span style='color:#c96442'>↑ anime 3.5× of real</span></td>
+</tr><tr>
+<td>oil_painting_style</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.03%</td>
+<td class="num">0.01%</td>
+<td class="num">0.08%</td>
+<td><span style='color:#5a8a4f'>↑ real 7.9× of anime</span></td>
+</tr><tr>
+<td>concept_painting</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr></tbody></table>
+</details><details open class="dim"><summary><span class="dn">动漫/Aesthetics/游戏 2.5D</span></summary>
+<table>
+<thead><tr><th>子维度</th><th>优先级 / 信号</th><th>总占比</th><th>anime 内</th><th>real 内</th><th>分布特征</th></tr></thead>
+<tbody><tr>
+<td>spider_verse</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr><tr>
+<td>25d</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr><tr>
+<td>mixed_media</td>
+<td><span class="pri" style="background:#888">P3</span> 无 prompt-level 信号</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td class="num">0.00%</td>
+<td><span style='color:#888'>0 信号</span></td>
+</tr></tbody></table>
+</details></section>
+</section>
+
+<section class="ctx">
+<h2>Bot-level Trope 分布（top100，作为 Aesthetics 优先级 anchor）</h2>
+<div class="trope-grid">
+<div class="trope-col"><h3>真人 top100 bot</h3><ul><li><strong>Original OC (Real)</strong>: 52% top100 (主力)</li><li><strong>Multi-Character</strong>: 26% top100</li><li><strong>Celebrity Character</strong>: 6% top100 (K-pop 大头)</li><li><strong>Original OC (Virtual)</strong>: 5%</li><li><strong>marriage trope</strong>: 4%</li></ul></div><div class="trope-col"><h3>动漫 top100 bot</h3><ul><li><strong>Original OC (Virtual)</strong>: 36% top100 (主力)</li><li><strong>Multi-Character</strong>: 26% top100</li><li><strong>marriage trope</strong>: 15%</li><li><strong>Original OC (Real)</strong>: 15%</li></ul></div></div></section>
+
+<section class="layer" style="background:#fdf6f2">
+<h2>v1.0 迭代优先级总结（综合 prompt 信号 + bot trope + 已知 cross-validation）</h2>
+<p style="font-size:13px;line-height:1.7"><strong>P0（立即做）</strong>：</p>
+<ul style="font-size:13px;line-height:1.7">
+<li>Quality 5 维度全部 P0（gate condition）</li>
+<li>Content · 真人：embrace 10% / bedroom 31% / rain night 11%（real）/ kissing 2.5%（anime）/ low_angle 9.7%（anime） — 都是 ≥1% 强信号</li>
+<li>Content · 动漫：magic_cast 15.7% / smirk 5% / kneeling 5.5% / blush 3% — 都是 ≥1% 强信号</li>
+<li>Aesthetics · 真人 B Dark Romance：cinematic 99.7% baseline + possessive 11% + ceo 0.8% + mafia 0.35% → P0 (用户 prompt 主动量级最大)</li>
+<li>Aesthetics · 动漫 marriage/OC Virtual 系（bot 51% top100）— 即使 prompt-level keyword 弱（otome 0% / bishounen 0.01%），bot trope demand 是数据 anchor</li>
+</ul>
+
+<p style="font-size:13px;line-height:1.7"><strong>P1（次优先 / 扩量储备）</strong>：</p>
+<ul style="font-size:13px;line-height:1.7">
+<li>Content · 真人：princess_carry 0.1% / forehead_touch 0.14% — 用户写少但 dark romance 经典 trope，作为风格 marker 训</li>
+<li>Aesthetics · 真人 A 日韩氧气：natural_light 0.7% / k_idol 0.03% — prompt 弱但 BTS 9/100 top bot 数据强 → P1</li>
+<li>Aesthetics · 真人 C 抖红美颜：v_line 3% real 内（间接 signal）— P1，等东亚扩量</li>
+</ul>
+
+<p style="font-size:13px;line-height:1.7"><strong>P2 / 砍</strong>：</p>
+<ul style="font-size:13px;line-height:1.7">
+<li>真人 3A 游戏建模：3d_render / unreal / octane / concept_art 全部 0% — 确认砍（仅作 base pretrain 训练集填充物，原则 6 已说明）</li>
+<li>真人高清艺术摄影：editorial 0.14% / magazine 0.16% / softbox 0.07% — 确认 P2（同上，作填充物）</li>
+<li>动漫游戏 2.5D / 美漫 2D：spider_verse / hazbin 等 0-0.05% — 长尾兜底</li>
+</ul>
+</section>
+
+<footer>
+Demand Matrix v1.0 · 2026-05-25 助手 × Rian · 关联：<a href="qca_brief.html">Q/C/A 三层 brief</a> · <a href="roadmap.html">开发优先级 + 训练 roadmap</a> · <a href="brief.html">6 sub-spec visual style brief</a>
+</footer>
+</div>
+</body></html>
