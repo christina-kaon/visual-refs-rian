@@ -33,9 +33,9 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
 </style></head><body>
 <div class="page">
 <header class="top">
-  <div class="eyebrow">EMOCHI · MODEL DEV PRIORITY + TRAINING ROADMAP · v0.3 · 2026-05-25</div>
+  <div class="eyebrow">EMOCHI · MODEL DEV PRIORITY + TRAINING ROADMAP · v0.4 · 2026-05-25</div>
   <h1>生图模型理想态 · 开发优先级 + 训练思路</h1>
-  <div class="sub">基于 Rian Q/C/A wiki + emochi top100 数据 + keyword verify 综合判断 · v0.3 · 纯 SFT + RLHF/DPO 不用 LoRA</div>
+  <div class="sub">基于 Rian Q/C/A wiki + emochi top100 数据 + keyword verify 综合判断 · v0.4 · 吸收两份北航 deck（强化学习 + 深度生成模型）</div>
 </header>
 
 <div class="callout">
@@ -124,7 +124,8 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
 
 <h3>Stage 1: Base Pre-train + General SFT（Quality 阶段）</h3>
 <ul>
-<li><strong>Base 选型</strong>：SDXL / Flux / SD3.5 之一作为 backbone（不自己 from scratch）</li>
+<li><strong>Base 选型（v0.4 update）</strong>：优先 <strong>SD3 / Flux 系（Flow Matching）</strong>backbone，因为 Flow Matching 是当前 image gen 范式的最新一代（Stable Diffusion 3+ 已切换）。Diffusion-based 是 fallback。两者数学等价但 Flow Matching 在工程实现上对 noise schedule 更鲁棒</li>
+<li><strong>不要自己 from scratch</strong>（北航 deck 也明确：站在开源 base 之上）</li>
 <li><strong>General SFT 数据</strong>：emochi 现有真实生图 + caption 重写（重写很重要，让 prompt 描述 align 内容生态）</li>
 <li><strong>Quality gate</strong>：用 1165 张反例库做 reject sampling — 训练集任何样本如果命中 D1-D5 任一维度，直接剔除</li>
 <li><strong>验收标准</strong>：5 个 Quality 维度 VLM judge ≥ 3/4（hard penalty 阈值）</li>
@@ -148,11 +149,13 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
 <li><strong>验收标准</strong>：sub-spec 用户群盲选（不能用 VLM 评，要找真实的 K-pop fan / 乙女游戏粉丝盲测）</li>
 </ul>
 
-<h3>Stage 4: RLHF / DPO 偏好对齐（emochi-specific）</h3>
+<h3>Stage 4: RLHF / DPO 偏好对齐（v0.4 update — 吸收北航 RL deck）</h3>
 <ul>
-<li><strong>数据来源</strong>：emochi 用户实际偏好信号（profile lift / 留存 / 付费率 / chat 深度）</li>
-<li><strong>方法</strong>：DPO（Direct Preference Optimization）或 RLAIF — DPO 比 PPO 简单稳定</li>
-<li><strong>preference pairs</strong>：在同一 prompt 下，用户和 bot 多轮聊天后留存 / 付费的图 = win，反之 = loss</li>
+<li><strong>方法选型</strong>：<strong>Diffusion-DPO</strong>（不是 LLM-PPO / GRPO 直接用），因为 image gen 的 reward 是 trajectory-level（整张图打分）而不是 token-level。Diffusion-DPO 是 image 端对应物，结构 align 北航 deck 里 LLM 的 DPO/GSPO 思路 — 但落到 latent space</li>
+<li><strong>借鉴 GRPO 思路（节约 value model 内存）</strong>：对同一个 prompt 采样 N 个图，按用户偏好做 group-relative 排序而不是绝对 reward。省一个 value model 的内存/算力（北航 deck 6.2.4.3）</li>
+<li><strong>借鉴 DAPO 思路（防 entropy collapse）</strong>：sub-spec 用户偏好窄，DPO 训练时容易让"原本低概率风格"被过早剪掉。**asymmetric clip (ε_low=0.2, ε_high=0.28)** 防止 entropy collapse — emochi sub-spec 这种"风格深度训练"特别需要（北航 deck 6.2.4.4）</li>
+<li><strong>数据来源</strong>：emochi 用户实际偏好信号（chat 深度 / 留存 / 付费率 / 用户对生成图主动 thumbs-up）—— 构造 preference pairs</li>
+<li><strong>preference pairs 构造</strong>：在同一 prompt + dialogue context 下，对每个 prompt 采样 N=4-8 张候选图，按 (留存 + chat 深度) 排序，取 win / loss pair 做 DPO 训练</li>
 <li><strong>cost 最高但收益最 emochi-specific</strong>：这一步把通用美学拉到 emochi 用户偏好分布</li>
 <li><strong>验收标准</strong>：上线 A/B test，看新模型 vs 旧模型的留存 / chat 深度提升</li>
 </ul>
@@ -183,7 +186,16 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
 </table>
 
 <h3 style="margin-top:20px">关键原则（v0.2 升级）</h3>
-<p style="font-size:13.5px">原则 6（新）：<strong>训练 data 是 distribution 的 sample，不是 product spec 的镜像。</strong>"我们 ship 哪些流派" 和 "我们用什么 data 训练" 是两条独立的决策线 — 前者是产品定义，后者是数据工程。混淆这两个会导致两种错误：(a) 数据过窄导致模型欠拟合（只看过 emochi 风格图就训不出 baseline 质感）；(b) 数据过泛导致模型走偏（什么都喂就会 mode collapse 到"中庸"）</p>
+<p style="font-size:13.5px">原则 6：<strong>训练 data 是 distribution 的 sample，不是 product spec 的镜像。</strong>"我们 ship 哪些流派" 和 "我们用什么 data 训练" 是两条独立的决策线 — 前者是产品定义，后者是数据工程。混淆这两个会导致两种错误：(a) 数据过窄导致模型欠拟合（只看过 emochi 风格图就训不出 baseline 质感）；(b) 数据过泛导致模型走偏（什么都喂就会 mode collapse 到"中庸"）</p>
+
+<h3 style="margin-top:20px">关键原则（v0.4 新增 — 来自北航深度生成模型 deck）</h3>
+<p style="font-size:13.5px">原则 7（新）：<strong>Diffusion model is secretly a zero-shot classifier。</strong>训出的 sub-spec model 本身就是个 "这张图是不是 X 流派" 的 classifier — 利用 ELBO + Bayes 公式可以直接 zero-shot 分类（北航 deck "关键论文：生成构筑理解"段）。这给我们三个 emochi-specific 红利：</p>
+<ul style="font-size:13.5px;line-height:1.7">
+<li><strong>训练完即得 classifier</strong>：不用额外训 style classifier，sub-spec model 本身就是。可以反过来给 benchmark VLM judge 提供 ground-truth anchor — 解决了我之前 brief 里"D3 审美 Pearson 0.34 不可靠"的 root cause</li>
+<li><strong>反锚点剔除可以自动化</strong>：用 stage 3 训完的 model 自动 scan 训练集，找 ELBO loss 偏高的样本 = 不符合 sub-spec 分布 = 反锚点候选。比纯人工剔除快 10-100×</li>
+<li><strong>style transfer cost 大幅降</strong>：sub-spec model A → B 的迁移可以用 model A 的 ELBO 作为 loss 引导，比从 base 重训省一半算力</li>
+</ul>
+<p style="font-size:13.5px;margin-top:10px">原则 8（新）：<strong>Quality 层的"不出戏"哲学和 GAN 的 D-loss 是同构的。</strong>北航 deck 讲 GAN 时强调"逐点 L2 重构损失没考虑全局性，导致边缘细节差"。这跟你 wiki 文档里写 Quality 是"用户第一秒会不会出戏"完全 align —— 都是<strong>感知层面的全局一致性</strong>而不是 pixel-level error。Quality VLM judge 应该按"是否出戏"这个 perceptual 标准 prompt，而不是 pixel-level metric</p>
 </section>
 
 <section class="principles">
@@ -212,7 +224,9 @@ footer a{color:#c96442;text-decoration:none;border-bottom:1px dotted}
 <li>"两个北航文章"我还没读到 — 训练思路是基于通用 T2I post-training 公认范式 (Flux / Stable Diffusion 3 / DiT 系) 写的，文章可能会让我修正某些技术选型（如 backbone / DPO vs RLAIF / LoRA rank 之类）</li>
 <li>Stage 4 RLHF preference signal 怎么从 emochi 埋点收集，需要和 PM + 后端确认 (chat 深度 / 留存 / profile lift 哪个作为 reward 最准)</li>
 <li>每个 sub-spec 200-1000 张 reference 的具体数字是估算，要看实际美术总监能 curate 多少</li>
-<li>**v0.3 确认：用纯 SFT 不用 LoRA**（Rian 5/25 拍板）— 6 个 P0 sub-spec = 6 个 full SFT checkpoint。资源 cost 上升 5-10×但风格强度上限明显更高，符合 emochi sub-spec 之间美学冲突的需求</li>
+<li>**v0.3 确认**：用纯 SFT 不用 LoRA（Rian 5/25 拍板）— 6 个 P0 sub-spec = 6 个 full SFT checkpoint</li>
+<li>**v0.4 吸收**：两份北航 deck（张瑞星老师整理）—— RL 一份讲 GRPO/DAPO/GSPO（LLM 端），深度生成模型一份讲 AR/VAE/GAN/Diffusion/Flow Matching。已把 GRPO 思路（group-relative 省 value model）+ DAPO asymmetric clip（防 entropy collapse）+ Diffusion-as-classifier（自动反锚点 + benchmark anchor）写进 Stage 4 + 原则 7-8</li>
+<li>**v0.4 待 ablation**：Diffusion-DPO vs DDPO vs ReFL，三个 image-RL 算法选型还没 lock。北航 deck 主要讲 LLM-RL 不直接给 image-RL 答案 —— 需要参考 Pickapic / OpenLeRobot / Black 等 image-DPO 工作做 ablation</li>
 </ul>
 </div>
 
